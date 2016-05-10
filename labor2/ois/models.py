@@ -3,16 +3,21 @@ from django.db import models
 
 
 class Semester(models.Model):
-    number = models.CharField(max_length=11)
+    name = models.CharField(max_length=16)
     start_date = models.DateField()
     end_date = models.DateField()
 
+    def __str__(self):
+        return self.name
 
 class Subject(models.Model):
-    code = models.IntegerField()
+    code = models.CharField(max_length=20)
     name = models.CharField(max_length=400)
     description = models.TextField()
     semester = models.ForeignKey(Semester)
+
+    def __str__(self):
+        return self.code + " - " + self.name + " (" + str(self.semester) + " )"
 
 
 class HomeWork(models.Model):
