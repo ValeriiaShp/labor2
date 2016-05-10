@@ -15,6 +15,8 @@ class SemesterUser(models.Model):
     user_id = models.ForeignKey(settings.AUTH_USER_MODEL)
     semester_id = models.ForeignKey(Semester)
 
+    def __str__(self):
+        return str(self.user_id) + " - " + str(self.semester_id)
 
 class Subject(models.Model):
     code = models.CharField(max_length=20)
@@ -49,6 +51,7 @@ class Notification(models.Model):
     to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='receiver')
     from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sender')
     is_read = models.BooleanField(default=False)
+    topic = models.CharField(max_length = 50)
     text = models.TextField()
 
 

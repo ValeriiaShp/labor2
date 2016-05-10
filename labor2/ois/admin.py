@@ -8,6 +8,7 @@ from .models import SubjectUser
 from .models import Notification
 from .models import StudentGroup
 from .models import StudentGroupUser
+from .models import SemesterUser
 
 # Register your models here.
 
@@ -19,3 +20,4 @@ admin.site.register(SubjectUser)
 admin.site.register(Notification)
 admin.site.register(StudentGroup)
 admin.site.register(StudentGroupUser)
+admin.site.register(SemesterUser)
