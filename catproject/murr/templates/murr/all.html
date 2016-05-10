@@ -1,0 +1,46 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		 <meta charset="UTF-8"> 
+		<title>Kassid</title>
+	</head>
+	
+	<body>
+	
+			<script>
+
+
+var xmlhttp = new XMLHttpRequest();
+var url = "../list/";
+
+xmlhttp.onreadystatechange = function() {
+    if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+        var myArr = JSON.parse(xmlhttp.responseText);
+        loadAllCats(myArr);
+    }
+};
+xmlhttp.open("GET", url, true);
+xmlhttp.send();
+
+function loadAllCats(arr) {
+    var out = "";
+    var i;
+    for(i = 0; i < arr.length; i++) {
+	out += "<li><a href='../cats/" + arr[i].slug + "/'>" + arr[i].name + "</a> (" + arr[i].year + ")</li>";
+	console.log("color[" + i + "]: " + arr[i].color);
+    }
+    document.getElementById("cat_list").innerHTML = out;
+}
+
+		</script>
+	
+		<p>Thanks for sending information about your cat! </p>
+		
+		<p>Our cats: </p>
+		<ul id="cat_list">
+		</ul>
+		
+		
+	</body>
+</html> 

@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		 <meta charset="UTF-8"> 
+		<title>Kassid</title>
+	</head>
+	<body>
+		<script>
+
+		function validateForm() {
+			var name_element = document.getElementById('cat_name').value;
+			var birth_year_element = parseInt(document.getElementById('cat_birth_year').value);
+			
+			var message = "Warning: ";
+			var valid = true;
+			
+			if (name_element.trim() == "") {
+				message += "name cannot be empty string; "
+				valid = false;
+			}
+			
+			var current_year = new Date().getFullYear();			
+
+			if (birth_year_element == NaN || (birth_year_element > current_year ) || (current_year - birth_year_element) > 50) {
+				message += "year cannot be empty string, or in the future, or earlier than 50 years ago."
+				valid = false;
+			}
+			
+			if (!valid) {
+				document.getElementById('validation_message').innerHTML = message;
+			}
+			
+			return valid;
+		}
+
+		</script>
+
+		<form id="form" action="." onsubmit="return validateForm()" method="POST">{% csrf_token %}
+		Name: <input name="name" id="cat_name" type="text" />
+		Year of Birth: <input name="birth_year" id="cat_birth_year" type="number" />
+                <select name="color">
+		{% for color in colors_list %}
+		    <option value="{{color.id}}"> {{color.name}} </option>
+               {% endfor %}
+		</select>
+		<input type="submit" value="send"/>
+		<div id="validation_message"></div>
+		</form>
+
+	</body>
+</html> 
