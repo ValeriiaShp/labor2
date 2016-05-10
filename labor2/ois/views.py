@@ -1,12 +1,22 @@
 import json
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import Group
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from ois.models import HomeWorkUser
 from ois.models import Notification
 
+def is_professor(user):
+    users_in_group = Group.objects.get(name="Professor").user_set.all()
+    return user in users_in_group
 
-def login(request):
+def is_student(user):
+    users_in_group = Group.objects.get(name="Student").user_set.all()
+    return user in users_in_group    
+
+
+def login_page(request):
     if request.method == "POST":
         username = request.POST['login']
         password = request.POST['pwd']
@@ -14,7 +24,8 @@ def login(request):
 
         if user is not None:
             if user.is_active:
-                pass
+                login(request, user)
+                return HttpResponseRedirect(reverse('home'))
             else:
                 return render(request, 'login.html', {"login_error" : "Inactive account. Please, contact administrator!"})        
         else:
@@ -23,6 +34,21 @@ def login(request):
     else: 
         return render(request, 'login.html', {})
 
+def home(request):
+    user = request.user
+    if user.is_authenticated():
+        if is_professor(user):
+            return render(request, 'professor/professorHeader.html', {})
+        elif is_student(user):
+            return render(request, 'student/studentHeader.html', {})
+        else:
+            return HttpResponseRedirect(reverse('index'))    
+    else:
+        return HttpResponseRedirect(reverse('index'))
+
+def logout_page(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('index'))
 
 def notifications(request):
     notifications = Notification.objects.all()
