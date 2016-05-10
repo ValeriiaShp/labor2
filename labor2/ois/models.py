@@ -43,3 +43,7 @@ class Notification(models.Model):
 
 class StudentGroup(models.Model):
     name = models.CharField(max_length=400)
+
+class StudentGroupUser(models.Model):
+    student_group_id=models.ForeignKey(StudentGroup)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL)
