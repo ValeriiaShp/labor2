@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class Semester(models.Model):
     number = models.CharField(max_length=11)
     start_date = models.DateField()
@@ -25,6 +26,7 @@ class HomeWorkUser(models.Model):
     id_homework = models.ForeignKey(HomeWork)
     answer = models.TextField()
     mark = models.IntegerField()
+    group_work = models.BooleanField()
 
 
 class SubjectUser(models.Model):
@@ -33,7 +35,7 @@ class SubjectUser(models.Model):
 
 
 class Notification(models.Model):
-    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reciever')
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='receiver')
     from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sender')
     is_read = models.BooleanField(default=False)
     text = models.TextField()
