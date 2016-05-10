@@ -41,5 +41,5 @@ class Notification(models.Model):
     text = models.TextField()
 
 
-class Group(models.Model):
+class StudentGroup(models.Model):
     name = models.CharField(max_length=400)
