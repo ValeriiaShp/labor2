@@ -1,7 +1,27 @@
 import json
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render
 from django.http import HttpResponse
 from ois.models import HomeWorkUser
 from ois.models import Notification
+
+
+def login(request):
+    if request.method == "POST":
+        username = request.POST['login']
+        password = request.POST['pwd']
+        user = authenticate(username = username, password = password)
+
+        if user is not None:
+            if user.is_active:
+                pass
+            else:
+                return render(request, 'login.html', {"login_error" : "Inactive account. Please, contact administrator!"})        
+        else:
+            return render(request, 'login.html', {"login_error" : "Invalid credentials!"})    
+
+    else: 
+        return render(request, 'login.html', {})
 
 
 def notifications(request):

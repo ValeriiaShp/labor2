@@ -4,9 +4,8 @@
     {% load staticfiles %}
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href='{% static "ois/style.css" %}'>
+    <link rel="stylesheet" href='{% static "style.css" %}'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript" src='{% static "ois/login.js" %}'></script>
 </head>
 <body>
 
@@ -19,21 +18,19 @@
         </div>
     </nav>
 
-    <form role="form">
+    <form role="form" method="POST">
+        {% csrf_token %}
         <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" class="form-control" id="email" placeholder="Enter email">
+            <label for="login">Login:</label>
+            <input class="form-control" id="login" name="login" placeholder="Enter login">
         </div>
         <div class="form-group">
             <label for="pwd">Password:</label>
-            <input type="password" class="form-control" id="pwd" placeholder="Enter password">
-        </div>
-        <div class="checkbox">
-            <label><input type="checkbox"> Remember me</label>
+            <input type="password" class="form-control" id="pwd" name="pwd" placeholder="Enter password">
         </div>
         <div class="form-group">
-            <button type="button" id="button" onclick="validate()" class="btn btn-default">Log in</button>
-            <label id="labelError" for="button" style="color: red">Invalid credentials! </label>
+            <button type="submit" id="button" class="btn btn-default">Log in</button>
+            <label id="labelError" for="button" style="color: red">{{login_error}}</label>
         </div>
     </form>
 </div>
