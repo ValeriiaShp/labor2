@@ -71,26 +71,21 @@
 
     <div id="professorNotifications" style="display: none">
         <table class="table">
+
             <thead>
             <tr>
                 <th>Name</th>
-                <th>Email</th>
+                <th>Topic</th>
             </tr>
             </thead>
+            {% for notification in notifications %}
             <tbody>
             <tr class="info">
-                <td>Teet Puu <span class="badge">1</span></td>
-                <td>teet.puu@example.com</td>
-            </tr>
-            <tr class="success">
-                <td>Teet Tee</td>
-                <td>teet.tee@example.com</td>
-            </tr>
-            <tr class="info">
-                <td>Teet Teepuu <span class="badge">1</span></td>
-                <td>teet.teepuu@example.com</td>
+                <td>{{notification.from_user}}<span class="badge">new</span></td>
+                <td>{{notification.topic}}</td>
             </tr>
             </tbody>
+            {% endfor %}
         </table>
 
     </div>
