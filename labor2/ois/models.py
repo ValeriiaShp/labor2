@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.db import models
-
 
 class Semester(models.Model):
     number = models.CharField(max_length=11)
@@ -21,20 +21,20 @@ class HomeWork(models.Model):
 
 
 class HomeWorkUser(models.Model):
-    id_user = models.ForeignKey(User)
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL)
     id_homework = models.ForeignKey(HomeWork)
     answer = models.TextField()
     mark = models.IntegerField()
 
 
 class SubjectUser(models.Model):
-    id_user = models.ForeignKey(User)
+    id_user = models.ForeignKey(settings.AUTH_USER_MODEL)
     id_subject = models.ForeignKey(Subject)
 
 
 class Notification(models.Model):
-    to_user = models.ForeignKey(User)
-    from_user = models.ForeignKey(User)
+    to_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='reciever')
+    from_user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sender')
     is_read = models.BooleanField(default=False)
     text = models.TextField()
 
