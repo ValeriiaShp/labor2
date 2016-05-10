@@ -6,6 +6,10 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from ois.models import HomeWorkUser
 from ois.models import Notification
+from ois.models import SemesterUser
+from ois.models import Subject
+from ois.models import Semester
+from ois.models import HomeWork
 
 def is_professor(user):
     users_in_group = Group.objects.get(name="Professor").user_set.all()
@@ -52,14 +56,35 @@ def logout_page(request):
 
 def notifications(request):
     notifications = Notification.objects.all()
-    results = [n.as_json() for n in notifications()]
+    results = [n.as_json() for n in notifications]
     return HttpResponse(json.dumps(results), content_type="application/json")
 
 
-def marks(request):
-    marks = HomeWorkUser.objects.all()
-    results = [m.as_json() for m in marks()]
-    return HttpResponse(json.dumps(results), content_type="application/json")
+def marks(request, homeworkCode):
+    homeworks = HomeWork.objects.get(pk=homeworkCode)
+    marks = HomeWorkUser.objects.filter(id_homework=homeworks)
+    results = [m.as_json() for m in marks]
+    return HttpResponse(json.dumps(results))
+
+def homeworks(request, subjectCode):
+    subjects = Subject.objects.get(pk=subjectCode)
+    homeworks = HomeWork.objects.filter(subject=subjects)
+    results = [m.as_json() for m in homeworks]
+    return HttpResponse(json.dumps(results))
+
+
+
+def semesters(request):
+    user = request.user
+    semesters = SemesterUser.objects.filter(user_id=user)
+    results = [m.as_json() for m in semesters]
+    return HttpResponse(json.dumps(results))
+
+def subjects(request, semesterCode):
+    semester = Semester.objects.get(pk=semesterCode)
+    subjects = Subject.objects.filter(semester=semester, professor=request.user)
+    results = [m.as_json() for m in subjects]
+    return HttpResponse(json.dumps(results))
 
 
 def statistics(request):

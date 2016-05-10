@@ -1,24 +1,164 @@
 var readonlyProperty = true;
 
 
-var studentsArray = '{ "students" : [' +
-    '{ "name":"John Doe", "studentCode":"124578", "email":"john.doe@ttu.ee", "subjectCode":"IDU0021", "grade":"3"},' +
-    '{ "name":"Anna Smith", "studentCode":"135478", "email":"anna.smith@ttu.ee","subjectCode":"IDU0022", "grade":"5" },' +
-    '{ "name":"Peter Jones", "studentCode":"137964", "email":"peter.jones@ttu.ee", "subjectCode":"IDU0033", "grade":"2"} ' +
-    ']}';
-var jsonSize = 2;
-var data = [
-    {value: "John Doe - 124578"},
-    {value: "Anna Smith - 135478"},
-    {value: "Peter Jones - 137964"},
-];
-
 $(document).ready(function () {
     $(function () {
         document.getElementById("addNewLine").style.visibility = 'hidden';
         loadContent('professorNotifications')
     });
+
+    $("#showMarks").click(function () {
+         $.ajax({
+         url: "/ois/semesters" ,
+         beforeSend: function (xhr) {
+         //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+         }
+         })
+         .done(function (data) {
+         loadContent("professorMarks");
+         professorSemesters(data);
+         });
+
+    });
+
+    $('#semesters').change(function() {
+        document.getElementById("subjectsDiv").style.display = 'none';
+        document.getElementById("homeworkDiv").style.display = 'none';
+
+
+        $.ajax({
+                url: "/ois/subjects/" + this.options[this.selectedIndex].value ,
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("professorMarks");
+                professorSubjects(data);
+            });
+
+    });
+
+    $('#subjectSelect').change(function() {
+        document.getElementById("homeworkDiv").style.display = 'none';
+        $.ajax({
+                url: "/ois/homeworks/" + this.options[this.selectedIndex].value ,
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("professorMarks");
+                professorHomeworks(data);
+            });
+
+    });
+
+    $('#homeworkSelect').change(function() {
+        $.ajax({
+                url: "/ois/marks/" + this.options[this.selectedIndex].value ,
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("professorMarks");
+                professorMarks(data);
+            });
+
+    });
+
+
 });
+
+
+function professorSemesters(data){
+    $('#semesters')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select semester</option>')
+        .val('null')
+    ;
+    var selectDropDown = document.getElementById("semesters");
+
+    var obj = JSON.parse(data);
+    for(var i = 0; i <obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].semesterId;
+        opt.innerHTML = obj[i].semester;
+        selectDropDown.appendChild(opt);
+    }
+}
+
+function professorSubjects(data){
+    document.getElementById("subjectsDiv").style.display = 'inline';
+
+    $('#subjectSelect')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select subject</option>')
+        .val('null')
+    ;
+    var selectDropDown = document.getElementById("subjectSelect");
+
+    var obj = JSON.parse(data);
+    for(var i = 0; i <obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].selfId;
+        opt.innerHTML = obj[i].name + " - " + obj[i].code;
+        selectDropDown.appendChild(opt);
+    }
+}
+
+function professorHomeworks(data){
+    document.getElementById("homeworkDiv").style.display = 'inline';
+
+    $('#homeworkSelect')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select homework</option>')
+        .val('null')
+    ;
+    var selectDropDown = document.getElementById("homeworkSelect");
+
+    var obj = JSON.parse(data);
+    for(var i = 0; i <obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].selfId;
+        opt.innerHTML = obj[i].name + " - " + obj[i].subjectCode;
+        selectDropDown.appendChild(opt);
+    }
+}
+
+
+function professorMarks(data) {
+    document.getElementById("addNewLine").style.visibility = 'hidden';
+    var table = document.getElementById("marksProf");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tableBody = table.getElementsByTagName('tbody')[0];
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var row = tableBody.insertRow(0);
+        row.className = "info";
+        var studentName = row.insertCell(0);
+        var subjectCode = row.insertCell(1);
+        var homework = row.insertCell(2)
+        var grade = row.insertCell(3);
+        studentName.innerHTML = obj[i].firstName + " " + obj[i].lastName;
+        subjectCode.innerHTML = obj[i].homeWorkSubjectName + " - " + obj[i].homeWorkSubjectCode;
+        homework.innerHTML = obj[i].homeWorkName;
+        if (obj[i].mark != null) {
+            grade.innerHTML = obj[i].mark;
+        } else {
+            grade.innerHTML = 'Not graded yet';
+        }
+    }
+}
+
 
 function showInputForm() {
     document.getElementById("addNewLine").style.visibility = 'visible';
@@ -83,7 +223,6 @@ function loadContent(content) {
         professorNotifications();
     } else if (content === "professorMarks") {
         document.getElementById('profMarks').className = "active";
-        professorMarks();
     } else if (content === "profStatistics") {
         document.getElementById('profStat').className = "active";
     } else if (content === "professorSearch") {
@@ -93,28 +232,6 @@ function loadContent(content) {
 }
 
 function professorNotifications() {
-
-}
-
-function professorMarks() {
-    document.getElementById("addNewLine").style.visibility = 'hidden';
-    var table = document.getElementById("marksProf");
-    table.tBodies[0].remove();
-    table.appendChild(document.createElement('tbody'));
-    var tableBody = table.getElementsByTagName('tbody')[0];
-    for (var i = 0; i <= jsonSize; i++) {
-        var obj = JSON.parse(studentsArray);
-        var row = tableBody.insertRow(0);
-        row.className = "info";
-        var studentName = row.insertCell(0);
-        var subjectCode = row.insertCell(1);
-        var grade = row.insertCell(2);
-        studentName.innerHTML = obj.students[i].name + " - " + obj.students[i].studentCode;
-        subjectCode.innerHTML = obj.students[i].subjectCode;
-        grade.innerHTML = obj.students[i].grade;
-
-
-    }
 
 }
 
@@ -198,7 +315,7 @@ function validate() {
 
 $(function () {
     $("#sdName").autocomplete({
-        source: data
+        //source: data
     });
 });
 
