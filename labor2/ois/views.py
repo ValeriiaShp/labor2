@@ -17,7 +17,7 @@ def is_professor(user):
 
 def is_student(user):
     users_in_group = Group.objects.get(name="Student").user_set.all()
-    return user in users_in_group    
+    return user in users_in_group
 
 
 def login_page(request):
@@ -31,11 +31,11 @@ def login_page(request):
                 login(request, user)
                 return HttpResponseRedirect(reverse('home'))
             else:
-                return render(request, 'login.html', {"login_error" : "Inactive account. Please, contact administrator!"})        
+                return render(request, 'login.html', {"login_error" : "Inactive account. Please, contact administrator!"})
         else:
-            return render(request, 'login.html', {"login_error" : "Invalid credentials!"})    
+            return render(request, 'login.html', {"login_error" : "Invalid credentials!"})
 
-    else: 
+    else:
         return render(request, 'login.html', {})
 
 def home(request):
@@ -46,7 +46,7 @@ def home(request):
         elif is_student(user):
             return render(request, 'student/studentHeader.html', {})
         else:
-            return HttpResponseRedirect(reverse('index'))    
+            return HttpResponseRedirect(reverse('index'))
     else:
         return HttpResponseRedirect(reverse('index'))
 
@@ -72,7 +72,21 @@ def homeworks(request, subjectCode):
     results = [m.as_json() for m in homeworks]
     return HttpResponse(json.dumps(results))
 
+def editHomeworkUser(request, homeWorkUserId):
+    homeworkUser = HomeWorkUser.objects.filter(pk=homeWorkUserId)
+    results = [m.as_json() for m in homeworkUser]
+    return HttpResponse(json.dumps(results))
 
+def putGrade(request):
+    context = {}
+    idHW = int(request.POST['hiddenInputHomeworkUserId'])
+    homeworkUser = HomeWorkUser.objects.filter(id=idHW)
+    homeworkUser.update(mark=request.POST['homeworkGrade'])
+    homeworkId = int(request.POST['hiddenInputHomeworkId'])
+    homeworks = HomeWork.objects.get(pk=homeworkId)
+    marks = HomeWorkUser.objects.filter(id_homework=homeworks)
+    results = [m.as_json() for m in marks]
+    return HttpResponse(json.dumps(results))
 
 def semesters(request):
     user = request.user

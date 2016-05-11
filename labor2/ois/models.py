@@ -69,11 +69,13 @@ class HomeWorkUser(models.Model):
         return self.id_user.first_name + " " + self.id_user.last_name + " is registered to " + self.id_homework.name
 
     def as_json(self):
-        return dict(answer=self.answer, mark=self.mark, firstName=self.id_user.first_name,
-                    lastName=self.id_user.last_name, homeworkName=self.id_homework.name,
+        return dict(answer=self.answer, mark=self.mark, userName=(self.id_user.first_name+' '+self.id_user.last_name),
+                    homeworkName=self.id_homework.name,
+                    homeworkDescription=self.id_homework.description,
                     homeWorkSubjectName=self.id_homework.subject.name,
                     homeWorkSubjectCode=self.id_homework.subject.code,
                     homeWorkName=self.id_homework.name,
+                    homeworkId=self.id_homework.id,
                     selfId=self.id)
 
 
