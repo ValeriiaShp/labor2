@@ -88,6 +88,17 @@ def putGrade(request):
     results = [m.as_json() for m in marks]
     return HttpResponse(json.dumps(results))
 
+def createHomework(request):
+    context = {}
+    idSubject = request.POST["subjectHWCreation"]
+    subjectC = Subject.objects.get(pk = idSubject)
+    homeworkDescription = request.POST["hwDescriptionCreation"]
+    homeworkName = request.POST["hwNameCreation"]
+    h = HomeWork(name=homeworkName,description=homeworkDescription,subject=subjectC)
+    h.save()
+    results = [h.as_json()]
+    return HttpResponse(json.dumps(results))
+
 def semesters(request):
     user = request.user
     semesters = SemesterUser.objects.filter(user_id=user)

@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^semesters/$', views.semesters, name='semesters'),
     url(r'^putGrade/$', views.putGrade, name='putGrade'),
     url(r'^subjects/(?P<semesterCode>[\w-]+)/$', views.subjects, name='subjects'),
-    url(r'^editHomeworkUser/(?P<homeWorkUserId>[\w-]+)/$', views.editHomeworkUser, name='editHomeworkUser')
+    url(r'^editHomeworkUser/(?P<homeWorkUserId>[\w-]+)/$', views.editHomeworkUser, name='editHomeworkUser'),
+    url(r'^createHomework/$', views.createHomework, name='createHomework'),
 ]

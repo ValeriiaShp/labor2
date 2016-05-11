@@ -23,7 +23,6 @@
                 </li>
                 <li id="profMarks"><a id="showMarks">Marks</a></li>
                 <li id="profHomework"><a id="createHomework"  onclick="loadContent('profHomework')">Create homework</a></li>
-                <li id="profStat"><a onclick="loadContent('profStatistics')">Statistics</a></li>
                 <li id="profSearch"><a onclick="loadContent('professorSearch')">Search</a></li>
                 <li><a href="../logout/">Logout</a></li>
             </ul>
@@ -113,7 +112,51 @@
     </div>
 
     <div id="professorHomework" style="display: none">
-        <h1>AAA</h1>
+
+        <br/>
+        <div class="modal-dialog" id="homeworkDiv">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create homework</h4>
+                </div>
+                <form id="creationForm" onsubmit="return validateFormCreate()"  method="POST">{% csrf_token %}
+                    <div class="modal-body">
+                        <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
+
+                        <label>Semester <span style="color: red">*</span></label><br/>
+                        <div id="semestersDiv">
+                            <select name="semestersHomework" id="semestersHomework">
+                            </select>
+                        </div>
+                        <br/>
+
+                        <label>Subject <span style="color: red">*</span></label><br/>
+                        <select id="subjectSelectHome">
+                            <option disabled>Select subject</option>
+                        </select>
+
+                        <br/><br/>
+                        <label>Homework name <span style="color: red">*</span></label><br/>
+                        <input name="hwNameCreation" id="hwNameCreationId"/>
+                        <br/><br/>
+
+                        <label>Homework description <span style="color: red">*</span></label><br/>
+                        <input name="hwDescriptionCreation" id="hwDescriptionCreationId"/>
+                        <br/><br/>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" id="saveHWButton" class="btn btn-primary pull-right">Save
+                            changes
+                        </button>
+
+                    </div>
+                    <label style="display: none" id="saved">Homework is saved successfully!</label>
+                </form>
+
+            </div>
+        </div>
     </div>
 
     <div id="professorNotifications" style="display: none">
@@ -133,53 +176,6 @@
                 </tr>
                 </tbody>
             {% endfor %}
-        </table>
-
-    </div>
-
-    <div id="profStatistics" style="display: none">
-
-        <table class="table" id="statistics">
-            <thead>
-            <tr>
-                <th>Subject code</th>
-                <th>Semester</th>
-                <th>Quantity of students</th>
-                <th>Average grade</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="info">
-                <td>IDU 0021</td>
-                <td>Automn 2015</td>
-                <td>300</td>
-                <td>3.2</td>
-            </tr>
-            <tr class="info">
-                <td>IDU 0021</td>
-                <td>Spring 2015</td>
-                <td>250</td>
-                <td>3.7</td>
-            </tr>
-            <tr class="info">
-                <td>IDU 0021</td>
-                <td>Automn 2015</td>
-                <td>300</td>
-                <td>3.2</td>
-            </tr>
-            <tr class="info">
-                <td>IDU 0022</td>
-                <td>Automn 2014</td>
-                <td>100</td>
-                <td>4.5</td>
-            </tr>
-            <tr class="info">
-                <td>IDU 0022</td>
-                <td>Spring 2015</td>
-                <td>130</td>
-                <td>4.1</td>
-            </tr>
-            </tbody>
         </table>
 
     </div>

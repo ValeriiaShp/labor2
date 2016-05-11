@@ -1,5 +1,3 @@
-var readonlyProperty = true;
-
 
 $(document).ready(function () {
     $(function () {
@@ -23,14 +21,43 @@ $(document).ready(function () {
 
     });
 
+    $("#createHomework").click(function () {
+        $.ajax({
+
+                url: "/ois/semesters",
+
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("profHomework");
+                professorSemestersCreation(data);
+            });
+
+    });
+
     $('#formGrade').submit(function() {
         $.ajax({
             data: $(this).serialize(),
-            type: $(this).attr('method'),
+            type: "POST",
             url: "/ois/putGrade/",
             success: function(data) {
                 $("#changeGrade").modal('hide');
                 professorMarks(data);
+            }
+        });
+        return false;
+    });
+
+    $('#creationForm').submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            type: "POST",
+            url: "/ois/createHomework/",
+            success: function(data) {
+                document.getElementById("saved").style.display = 'block';
+                clearForm();
             }
         });
         return false;
@@ -55,6 +82,17 @@ $(document).ready(function () {
 
     });
 
+    $('#semestersHomework').change(function () {
+        $.ajax({
+                url: "/ois/subjects/" + this.options[this.selectedIndex].value
+            })
+            .done(function (data) {
+                loadContent("profHomework");
+                professorSubjectsCreation(data);
+            });
+
+    });
+
     $('#subjectSelect').change(function () {
         document.getElementById("homeworkDiv").style.display = 'none';
         $.ajax({
@@ -68,6 +106,11 @@ $(document).ready(function () {
                 professorHomeworks(data);
             });
 
+    });
+
+    $('#subjectSelectHome').change(function () {
+        var i = this.options[this.selectedIndex].value;
+        document.getElementById("subjectHWCreationId").value = this.options[this.selectedIndex].value;
     });
 
     $('#homeworkSelect').change(function () {
@@ -87,6 +130,38 @@ $(document).ready(function () {
 
 });
 
+function loadContent(content) {
+    if (content === 'logout') {
+        window.location = "../login.html";
+    }
+    //disable others
+    document.getElementById('professorNotifications').style.display = 'none';
+    document.getElementById('professorMarks').style.display = 'none';
+    document.getElementById('professorSearch').style.display = 'none';
+    document.getElementById('professorHomework').style.display = 'none';
+
+    document.getElementById('profNot').className = "";
+    document.getElementById('profMarks').className = "";
+    document.getElementById('profSearch').className = "";
+    document.getElementById('profHomework').className = "";
+
+    //enable one
+    document.getElementById(content).style.display = 'block';
+    if (content === "professorNotifications") {
+        document.getElementById("profNot").className = "active";
+        professorNotifications();
+    } else if (content === "professorMarks") {
+        document.getElementById('profMarks').className = "active";
+    } else if (content === "professorSearch") {
+        document.getElementById('profSearch').className = "active";
+    }else if (content === "profHomework") {
+        document.getElementById('profHomework').className = "active";
+        document.getElementById("creationForm").style.display = 'block';
+        professorHomework();
+    }
+
+}
+
 function professorSemesters(data) {
     $('#semesters')
         .find('option')
@@ -95,7 +170,28 @@ function professorSemesters(data) {
         .append('<option value="null" disabled>Select semester</option>')
         .val('null')
     ;
+
     var selectDropDown = document.getElementById("semesters");
+
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].semesterId;
+        opt.innerHTML = obj[i].semester;
+        selectDropDown.appendChild(opt);
+    }
+}
+
+function professorSemestersCreation(data) {
+
+    $('#semestersHomework')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select semester</option>')
+        .val('null')
+    ;
+    var selectDropDown = document.getElementById("semestersHomework");
 
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
@@ -116,7 +212,27 @@ function professorSubjects(data) {
         .append('<option value="null" disabled>Select subject</option>')
         .val('null')
     ;
+
     var selectDropDown = document.getElementById("subjectSelect");
+
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].selfId;
+        opt.innerHTML = obj[i].name + " - " + obj[i].code;
+        selectDropDown.appendChild(opt);
+    }
+}
+
+function professorSubjectsCreation(data) {
+    $('#subjectSelectHome')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select subject</option>')
+        .val('null')
+    ;
+    var selectDropDown = document.getElementById("subjectSelectHome");
 
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
@@ -206,6 +322,7 @@ function fillEditData(data, hwId) {
     var studentAnswer = obj[0].answer;
     document.getElementById("hiddenInputId").value = hwId;
     document.getElementById("hiddenInputHomeworkId").value = obj[0].homeworkId;
+    /*document.getElementById("receiverId").value = obj[0].userId;*/
     document.getElementById("homeworkName").textContent = homeworkName;
     document.getElementById("homeworkDescription").textContent = homeworkDescription;
     document.getElementById("homeworkStudentName").textContent = studentName;
@@ -214,83 +331,12 @@ function fillEditData(data, hwId) {
 }
 
 
-function showInputForm() {
-    document.getElementById("addNewLine").style.visibility = 'visible';
-    createSelectName();
-    createSelectCode()
 
 
-}
-
-function createSelectCode() {
-    var divCodeName = document.getElementById("subjectCode");
-    divCodeName.removeChild(divCodeName.childNodes[0]);
-    var selectListCode = document.createElement("select");
-    selectListCode.id = "selectCodeName";
-    selectListCode.className = "form-control";
-    divCodeName.appendChild(selectListCode);
-    for (var i = 0; i <= jsonSize; i++) {
-        var obj = JSON.parse(studentsArray);
-        var optionCode = document.createElement("option");
-        optionCode.text = obj.students[i].subjectCode;
-        optionCode.value = optionCode.text;
-        selectListCode.add(optionCode);
-    }
-}
-
-function createSelectName() {
-    var divStudName = document.getElementById("studentName");
-    divStudName.removeChild(divStudName.childNodes[0]);
-    var selectList = document.createElement("select");
-    selectList.id = "selectStudName";
-    selectList.className = "form-control";
-    divStudName.appendChild(selectList);
-    for (var i = 0; i <= jsonSize; i++) {
-        var obj = JSON.parse(studentsArray);
-        var option = document.createElement("option");
-        option.text = obj.students[i].name + " - " + obj.students[i].studentCode;
-        option.value = option.text;
-        selectList.add(option);
-    }
-}
-
-function loadContent(content) {
-    if (content === 'logout') {
-        window.location = "../login.html";
-    }
-    //disable others
-    document.getElementById('professorNotifications').style.display = 'none';
-    document.getElementById('professorMarks').style.display = 'none';
-    document.getElementById('profStatistics').style.display = 'none';
-    document.getElementById('professorSearch').style.display = 'none';
-    document.getElementById('professorHomework').style.display = 'none';
-
-    document.getElementById('profNot').className = "";
-    document.getElementById('profMarks').className = "";
-    document.getElementById('profStat').className = "";
-    document.getElementById('profSearch').className = "";
-    document.getElementById('profHomework').className = "";
-
-    //enable one
-    document.getElementById(content).style.display = 'block';
-    if (content === "professorNotifications") {
-        document.getElementById("profNot").className = "active";
-        professorNotifications();
-    } else if (content === "professorMarks") {
-        document.getElementById('profMarks').className = "active";
-    } else if (content === "profStatistics") {
-        document.getElementById('profStat').className = "active";
-    } else if (content === "professorSearch") {
-        document.getElementById('profSearch').className = "active";
-    }else if (content === "profHomework") {
-        document.getElementById('profHomework').className = "active";
-        professorHomework();
-    }
-
-}
 
 function professorHomework(){
     document.getElementById('professorHomework').style.display = 'block';
+    document.getElementById("saved").style.display = 'none';
 }
 
 function professorNotifications() {
@@ -327,60 +373,11 @@ function detailedInfo() {
     document.getElementById("detailedInfo").style.display = "block";
 }
 
-function modifyMark(id) {
-    if (readonlyProperty == true) {
-        document.getElementById(id).removeAttribute("readonly");
-        readonlyProperty = false;
-    } else {
-        document.getElementById(id).readOnly = "true";
-        readonlyProperty = true;
-    }
-}
 
-function validate() {
-    var studentName = document.getElementById("selectStudName").value;
-    var nameCode = studentName.split("-");
-    studentName = nameCode[0].substring(0, nameCode[0].length - 1);
-    var studentCode = nameCode[1].substring(1, nameCode[1].length);
-    var subjectCOde = document.getElementById("selectCodeName").value;
-    var grade = document.getElementById("grade").value;
-
-    if (grade > 5 || grade < 0) {
-        document.getElementById("errorLabel").style.display = "block";
-        return;
-    }
-
-    var obj = JSON.parse(studentsArray);
-    for (var i = 0; i <= jsonSize; i++) {
-        if (studentName === obj.students[i].name && subjectCOde === obj.students[i].subjectCode
-            && studentCode === obj.students[i].studentCode) {
-            document.getElementById("errorMark").style.display = "block";
-            return;
-        }
-    }
-
-    obj['students'].push({
-        "name": studentName,
-        "studentCode": studentCode,
-        "email": null,
-        "subjectCode": subjectCOde,
-        "grade": grade
-    });
-    studentsArray = JSON.stringify(obj);
-    jsonSize += 1;
-    document.getElementById("studentName").value = "";
-    document.getElementById("subjectCode").value = "";
-    document.getElementById("grade").value = "";
-    document.getElementById("errorLabel").style.display = "none";
-    document.getElementById("errorMark").style.display = "none";
-
-    professorMarks();
-
-}
 
 $(function () {
     $("#sdName").autocomplete({
-        //source: data
+        source: data
     });
 });
 
@@ -394,6 +391,24 @@ function validateForm() {
     }
 
 
+
+
+}
+function validateFormCreate() {
+
+    return true;
+}
+
+function clearForm(){
+    $('#subjectSelectHome')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select subject</option>')
+        .val('null')
+    ;
+    document.getElementById("hwNameCreationId").value = "";
+    document.getElementById("hwDescriptionCreationId").value = "";
 }
 
 
