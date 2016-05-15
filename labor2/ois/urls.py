@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^subjects/(?P<semesterCode>[\w-]+)/$', views.subjects, name='subjects'),
     url(r'^editHomeworkUser/(?P<homeWorkUserId>[\w-]+)/$', views.editHomeworkUser, name='editHomeworkUser'),
     url(r'^createHomework/$', views.createHomework, name='createHomework'),
+    url(r'^search/$', views.search, name='search')
 ]

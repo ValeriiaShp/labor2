@@ -1,4 +1,4 @@
-
+var fullJSON = [];
 $(document).ready(function () {
     $(function () {
         loadContent('professorNotifications')
@@ -21,6 +21,11 @@ $(document).ready(function () {
 
     });
 
+    $("#profSearch").click(function () {
+        loadContent("professorSearch");
+    });
+
+
     $("#createHomework").click(function () {
         $.ajax({
 
@@ -37,12 +42,12 @@ $(document).ready(function () {
 
     });
 
-    $('#formGrade').submit(function() {
+    $('#formGrade').submit(function () {
         $.ajax({
             data: $(this).serialize(),
             type: "POST",
             url: "/ois/putGrade/",
-            success: function(data) {
+            success: function (data) {
                 $("#changeGrade").modal('hide');
                 professorMarks(data);
             }
@@ -50,12 +55,12 @@ $(document).ready(function () {
         return false;
     });
 
-    $('#creationForm').submit(function() {
+    $('#creationForm').submit(function () {
         $.ajax({
             data: $(this).serialize(),
             type: "POST",
             url: "/ois/createHomework/",
-            success: function(data) {
+            success: function (data) {
                 document.getElementById("saved").style.display = 'block';
                 clearForm();
             }
@@ -127,8 +132,51 @@ $(document).ready(function () {
 
     });
 
+    /*$('#sdName').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/ois/search',
+                data: {
+                    json_data: JSON.stringify({
+                        enteredString: {
+                            maxRows: 12,
+                            nameStartsWith: request.term
+                        }
+                    })
 
+                },
+                success: function (data) {
+
+                    response($.map(data, function (item) {
+                        alert(data);
+                        return {
+                            plink: item.plink, // ссылка на страницу товара
+                            label: item.title_ru // наименование товара
+                        }
+                    }));
+                }
+            });
+        },
+        select: function (event, ui) {
+            // по выбору - перейти на страницу товара
+            // Вы можете делать вывод результата на экран
+            location.href = ui.item.plink;
+            return false;
+        },
+        minLength: 1 // начинать поиск с трех символов
+    });*/
 });
+
+var dataJson = [];
+function makeJson(data) {
+    fullJSON = data;
+    var obj = JSON.parse(data);
+
+    for (var i = 0; i < obj.length; i++) {
+        var item = obj[i];
+        dataJson.push(item.value);
+    }
+}
 
 function loadContent(content) {
     if (content === 'logout') {
@@ -154,7 +202,7 @@ function loadContent(content) {
         document.getElementById('profMarks').className = "active";
     } else if (content === "professorSearch") {
         document.getElementById('profSearch').className = "active";
-    }else if (content === "profHomework") {
+    } else if (content === "profHomework") {
         document.getElementById('profHomework').className = "active";
         document.getElementById("creationForm").style.display = 'block';
         professorHomework();
@@ -223,6 +271,7 @@ function professorSubjects(data) {
         selectDropDown.appendChild(opt);
     }
 }
+
 
 function professorSubjectsCreation(data) {
     $('#subjectSelectHome')
@@ -331,10 +380,7 @@ function fillEditData(data, hwId) {
 }
 
 
-
-
-
-function professorHomework(){
+function professorHomework() {
     document.getElementById('professorHomework').style.display = 'block';
     document.getElementById("saved").style.display = 'none';
 }
@@ -352,7 +398,7 @@ function detailedInfo() {
     table.tBodies[0].remove();
     table.appendChild(document.createElement('tbody'));
     var tBody = table.getElementsByTagName('tbody')[0];
-    var name = document.getElementById("sdName").value;
+    var name = document.getElementById("studentsAutocompl").value;
     var nameCode = name.split("-");
     name = nameCode[0].substring(0, nameCode[0].length - 1);
     var obj = JSON.parse(studentsArray);
@@ -373,13 +419,12 @@ function detailedInfo() {
     document.getElementById("detailedInfo").style.display = "block";
 }
 
+var data = [
+    {value: "John Doe - 124578"},
+    {value: "Anna Smith - 135478"},
+    {value: "Peter Jones - 137964"},
+];
 
-
-$(function () {
-    $("#sdName").autocomplete({
-        source: data
-    });
-});
 
 function validateForm() {
     document.getElementById("errorLabel").style.display = "none";
@@ -391,15 +436,13 @@ function validateForm() {
     }
 
 
-
-
 }
 function validateFormCreate() {
 
     return true;
 }
 
-function clearForm(){
+function clearForm() {
     $('#subjectSelectHome')
         .find('option')
         .remove()

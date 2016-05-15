@@ -1,5 +1,8 @@
 import json
+import logging
+
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import Group
 from django.shortcuts import render
@@ -10,6 +13,7 @@ from ois.models import SemesterUser
 from ois.models import Subject
 from ois.models import Semester
 from ois.models import HomeWork
+from ois.models import SubjectUser
 
 def is_professor(user):
     users_in_group = Group.objects.get(name="Professor").user_set.all()
@@ -96,6 +100,10 @@ def createHomework(request):
     homeworkName = request.POST["hwNameCreation"]
     h = HomeWork(name=homeworkName,description=homeworkDescription,subject=subjectC)
     h.save()
+    subjectUser = list(SubjectUser.objects.filter(id_subject=subjectC))
+    for su in subjectUser:
+        hwu = HomeWorkUser(id_user=su.id_user,id_homework=h)
+        hwu.save()
     results = [h.as_json()]
     return HttpResponse(json.dumps(results))
 
@@ -112,15 +120,18 @@ def subjects(request, semesterCode):
     return HttpResponse(json.dumps(results))
 
 
-def statistics(request):
-    pass
-    # stastistics = Cat.objects.all()
-    # results = [c.as_json() for c in allCats]
-    # return HttpResponse(json.dumps(results), content_type="application/json")
-
 
 def search(request):
-    pass
-    # allCats = Cat.objects.all()
-    # results = [c.as_json() for c in allCats]
-    # return HttpResponse(json.dumps(results), content_type="application/json")
+    data_dict = json.loads(request.POST.get('json_data'))
+    print (data_dict['enteredString']['nameStartsWith']) # Should print 4
+    #search_qs = User.objects.filter(first_name__startswith=enteredString)
+   # json_res = []
+    #for record in search_qs:
+      #  json_obj = dict(
+       #         value = record.first_name + ' ' + record.last_name,
+       #         id = record.id
+
+      #  )
+      #  json_res.append(json_obj)
+    return HttpResponse(json.dumps(search_qs))
+
