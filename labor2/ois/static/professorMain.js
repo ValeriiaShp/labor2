@@ -32,7 +32,7 @@ $(document).ready(function () {
             })
             .done(function (data) {
                 loadContent("professorMarks");
-                professorSemesters(data);
+                professorSemesters(data, "semesters");
             });
 
     });
@@ -40,7 +40,6 @@ $(document).ready(function () {
     $("#profSearch").click(function () {
         loadContent("professorSearch");
     });
-
 
     $("#createHomework").click(function () {
         $.ajax({
@@ -53,7 +52,7 @@ $(document).ready(function () {
             })
             .done(function (data) {
                 loadContent("profHomework");
-                professorSemestersCreation(data);
+                professorSemesters(data, "semestersHomework");
             });
 
     });
@@ -84,7 +83,6 @@ $(document).ready(function () {
         return false;
     });
 
-
     $('#semesters').change(function () {
         document.getElementById("subjectsDiv").style.display = 'none';
         document.getElementById("homeworkDiv").style.display = 'none';
@@ -98,7 +96,7 @@ $(document).ready(function () {
             })
             .done(function (data) {
                 loadContent("professorMarks");
-                professorSubjects(data);
+                professorSubjects(data, "subjectSelect");
             });
 
     });
@@ -109,7 +107,7 @@ $(document).ready(function () {
             })
             .done(function (data) {
                 loadContent("profHomework");
-                professorSubjectsCreation(data);
+                professorSubjects(data, "subjectSelectHome");
             });
 
     });
@@ -253,7 +251,7 @@ function countMessages(data){
     }
 }
 
-function professorSemesters(data) {
+function professorSemesters(data, selectId) {
     $('#semesters')
         .find('option')
         .remove()
@@ -262,19 +260,6 @@ function professorSemesters(data) {
         .val('null')
     ;
 
-    var selectDropDown = document.getElementById("semesters");
-
-    var obj = JSON.parse(data);
-    for (var i = 0; i < obj.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = obj[i].semesterId;
-        opt.innerHTML = obj[i].semester;
-        selectDropDown.appendChild(opt);
-    }
-}
-
-function professorSemestersCreation(data) {
-
     $('#semestersHomework')
         .find('option')
         .remove()
@@ -282,7 +267,8 @@ function professorSemestersCreation(data) {
         .append('<option value="null" disabled>Select semester</option>')
         .val('null')
     ;
-    var selectDropDown = document.getElementById("semestersHomework");
+
+    var selectDropDown = document.getElementById(selectId);
 
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
@@ -293,7 +279,7 @@ function professorSemestersCreation(data) {
     }
 }
 
-function professorSubjects(data) {
+function professorSubjects(data, selectId) {
     document.getElementById("subjectsDiv").style.display = 'inline';
 
     $('#subjectSelect')
@@ -303,20 +289,6 @@ function professorSubjects(data) {
         .append('<option value="null" disabled>Select subject</option>')
         .val('null')
     ;
-
-    var selectDropDown = document.getElementById("subjectSelect");
-
-    var obj = JSON.parse(data);
-    for (var i = 0; i < obj.length; i++) {
-        var opt = document.createElement('option');
-        opt.value = obj[i].selfId;
-        opt.innerHTML = obj[i].name + " - " + obj[i].code;
-        selectDropDown.appendChild(opt);
-    }
-}
-
-
-function professorSubjectsCreation(data) {
     $('#subjectSelectHome')
         .find('option')
         .remove()
@@ -324,7 +296,8 @@ function professorSubjectsCreation(data) {
         .append('<option value="null" disabled>Select subject</option>')
         .val('null')
     ;
-    var selectDropDown = document.getElementById("subjectSelectHome");
+
+    var selectDropDown = document.getElementById(selectId);
 
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
@@ -421,7 +394,6 @@ function fillEditData(data, hwId) {
     document.getElementById("homeworkStudentAnswer").textContent = studentAnswer;
 
 }
-
 
 function professorHomework() {
     document.getElementById('professorHomework').style.display = 'block';
@@ -525,6 +497,7 @@ function validateForm() {
 
 
 }
+
 function validateFormCreate() {
 
     return true;
