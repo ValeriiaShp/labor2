@@ -102,6 +102,9 @@ class Notification(models.Model):
         return dict(receiver=self.to_user.id, senderFirstName=self.from_user.first_name,
                     senderLastName=self.from_user.last_name, isRead=self.is_read,
                     topic=self.topic, text=self.text)
+    def __str__(self):
+        return "The new message to " + self.to_user.first_name + " " + self.to_user.last_name + " from " + self.from_user.first_name + " " + self.from_user.last_name
+
 
 
 class StudentGroup(models.Model):

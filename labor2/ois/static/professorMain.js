@@ -132,7 +132,7 @@ $(document).ready(function () {
 
     });
 
-    /*$('#sdName').autocomplete({
+    $('#sdName').autocomplete({
         source: function (request, response) {
             $.ajax({
                 url: '/ois/search',
@@ -164,7 +164,7 @@ $(document).ready(function () {
             return false;
         },
         minLength: 1 // начинать поиск с трех символов
-    });*/
+    });
 });
 
 var dataJson = [];

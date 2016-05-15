@@ -89,6 +89,9 @@ def putGrade(request):
     homeworkId = int(request.POST['hiddenInputHomeworkId'])
     homeworks = HomeWork.objects.get(pk=homeworkId)
     marks = HomeWorkUser.objects.filter(id_homework=homeworks)
+    messageText = "You have a grade " + request.POST['homeworkGrade'] + " on homework - " + homeworks.name
+    notification = Notification(to_user=homeworkUser[0].id_user, from_user=request.user, topic="You have a new grade",text=messageText )
+    notification.save()
     results = [m.as_json() for m in marks]
     return HttpResponse(json.dumps(results))
 
@@ -101,9 +104,13 @@ def createHomework(request):
     h = HomeWork(name=homeworkName,description=homeworkDescription,subject=subjectC)
     h.save()
     subjectUser = list(SubjectUser.objects.filter(id_subject=subjectC))
+    messageText = "You have a new homework \"" + homeworkName + "\" on subject - " + subjectC.name
     for su in subjectUser:
-        hwu = HomeWorkUser(id_user=su.id_user,id_homework=h)
-        hwu.save()
+        if is_student(su.id_user):
+            hwu = HomeWorkUser(id_user=su.id_user,id_homework=h)
+            hwu.save()
+            notification = Notification(to_user=su.id_user, from_user=request.user, topic="You have a new homework",text=messageText )
+            notification.save()
     results = [h.as_json()]
     return HttpResponse(json.dumps(results))
 

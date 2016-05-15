@@ -22,8 +22,9 @@
                         class="badge">2</span></a>
                 </li>
                 <li id="profMarks"><a id="showMarks">Marks</a></li>
-                <li id="profHomework"><a id="createHomework"  onclick="loadContent('profHomework')">Create homework</a></li>
-                <li id="profSearch"><a id="profSearch" >Search</a></li>
+                <li id="profHomework"><a id="createHomework" onclick="loadContent('profHomework')">Create homework</a>
+                </li>
+                <li id="profSearch"><a id="profSearch">Search</a></li>
                 <li><a href="../logout/">Logout</a></li>
             </ul>
         </div>
@@ -113,93 +114,95 @@
 
     <div id="professorHomework" style="display: none">
 
+
         <br/>
         <div class="modal-dialog" id="homeworkDiv">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Create homework</h4>
-                </div>
-                <form id="creationForm" onsubmit="return validateFormCreate()"  method="POST">{% csrf_token %}
-                    <div class="modal-body">
-                        <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
+                    <div>
+                        <h4 class="modal-title">Create homework</h4>
+                    </div>
+                    <form id="creationForm" onsubmit="return validateFormCreate()" method="POST">{% csrf_token %}
+                        <div class="modal-body">
+                            <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
 
-                        <label>Semester <span style="color: red">*</span></label><br/>
-                        <div id="semestersDiv">
-                            <select name="semestersHomework" id="semestersHomework">
+                            <label>Semester <span style="color: red">*</span></label><br/>
+                            <div id="semestersDiv">
+                                <select name="semestersHomework" id="semestersHomework">
+                                </select>
+                            </div>
+                            <br/>
+
+                            <label>Subject <span style="color: red">*</span></label><br/>
+                            <select id="subjectSelectHome">
+                                <option disabled>Select subject</option>
                             </select>
+
+                            <br/><br/>
+                            <label>Homework name <span style="color: red">*</span></label><br/>
+                            <input name="hwNameCreation" id="hwNameCreationId"/>
+                            <br/><br/>
+
+                            <label>Homework description <span style="color: red">*</span></label><br/>
+                            <input name="hwDescriptionCreation" id="hwDescriptionCreationId"/>
+                            <br/><br/>
+
+
                         </div>
-                        <br/>
+                        <div class="modal-footer">
+                            <button type="submit" id="saveHWButton" class="btn btn-primary pull-right">Save
+                                changes
+                            </button>
 
-                        <label>Subject <span style="color: red">*</span></label><br/>
-                        <select id="subjectSelectHome">
-                            <option disabled>Select subject</option>
-                        </select>
+                        </div>
+                        <label style="display: none" id="saved">Homework is saved successfully!</label>
+                    </form>
 
-                        <br/><br/>
-                        <label>Homework name <span style="color: red">*</span></label><br/>
-                        <input name="hwNameCreation" id="hwNameCreationId"/>
-                        <br/><br/>
-
-                        <label>Homework description <span style="color: red">*</span></label><br/>
-                        <input name="hwDescriptionCreation" id="hwDescriptionCreationId"/>
-                        <br/><br/>
-
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" id="saveHWButton" class="btn btn-primary pull-right">Save
-                            changes
-                        </button>
-
-                    </div>
-                    <label style="display: none" id="saved">Homework is saved successfully!</label>
-                </form>
-
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="professorNotifications" style="display: none">
-        <table class="table">
+        <div id="professorNotifications" style="display: none">
+            <table class="table">
 
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Topic</th>
-            </tr>
-            </thead>
-            {% for notification in notifications %}
-                <tbody>
-                <tr class="info">
-                    <td>{{ notification.from_user }}<span class="badge">new</span></td>
-                    <td>{{ notification.topic }}</td>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Topic</th>
                 </tr>
+                </thead>
+                {% for notification in notifications %}
+                    <tbody>
+                    <tr class="info">
+                        <td>{{ notification.from_user }}<span class="badge">new</span></td>
+                        <td>{{ notification.topic }}</td>
+                    </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+
+        </div>
+
+        <div id="professorSearch" style="display: none">
+
+            <input id="sdName" type="text" placeholder="Student name"/>
+            <button id="showDetailedData" onclick="detailedInfo()">Detailed info</button>
+
+            <table class="table" class="form-control" id="detailedInfo" style="display: none">
+                <thead>
+                <tr>
+                    <th>Student name</th>
+                    <th>Student code</th>
+                    <th>Subject code</th>
+                    <th>Grade</th>
+                </tr>
+                </thead>
+                <tbody id="detailsBody">
                 </tbody>
-            {% endfor %}
-        </table>
+            </table>
+
+        </div>
+
 
     </div>
-
-    <div id="professorSearch" style="display: none">
-
-        <input id="sdName" type="text" placeholder="Student name"/>
-        <button id="showDetailedData" onclick="detailedInfo()">Detailed info</button>
-
-        <table class="table" class="form-control" id="detailedInfo" style="display: none">
-            <thead>
-            <tr>
-                <th>Student name</th>
-                <th>Student code</th>
-                <th>Subject code</th>
-                <th>Grade</th>
-            </tr>
-            </thead>
-            <tbody id="detailsBody">
-            </tbody>
-        </table>
-
-    </div>
-
-
-</div>
-</html>
+    </html>
