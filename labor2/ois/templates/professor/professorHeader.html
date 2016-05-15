@@ -15,11 +15,11 @@
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" onclick="loadContent('professorNotifications')">Studying system</a>
+                <a class="navbar-brand">Studying system</a>
             </div>
             <ul class="nav navbar-nav" id="navigationBar">
-                <li id="profNot" class="active"><a onclick="loadContent('professorNotifications')">Notifications <span
-                        class="badge">2</span></a>
+                <li id="profNot" class="active"><a id="profNotification">Notifications <span
+                        class="badge" id="msgs"></span></a>
                 </li>
                 <li id="profMarks"><a id="showMarks">Marks</a></li>
                 <li id="profHomework"><a id="createHomework" onclick="loadContent('profHomework')">Create homework</a>
@@ -161,48 +161,79 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="professorNotifications" style="display: none">
-            <table class="table">
-
+    <div id="professorNotifications" style="display: none">
+        <form role="form">
+            <table class="table" id="notifProf">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Topic</th>
+                    <th>From</th>
+                    <th>Subject</th>
                 </tr>
                 </thead>
-                {% for notification in notifications %}
-                    <tbody>
-                    <tr class="info">
-                        <td>{{ notification.from_user }}<span class="badge">new</span></td>
-                        <td>{{ notification.topic }}</td>
-                    </tr>
-                    </tbody>
-                {% endfor %}
-            </table>
-
-        </div>
-
-        <div id="professorSearch" style="display: none">
-
-            <input id="sdName" type="text" placeholder="Student name"/>
-            <button id="showDetailedData" onclick="detailedInfo()">Detailed info</button>
-
-            <table class="table" class="form-control" id="detailedInfo" style="display: none">
-                <thead>
-                <tr>
-                    <th>Student name</th>
-                    <th>Student code</th>
-                    <th>Subject code</th>
-                    <th>Grade</th>
-                </tr>
-                </thead>
-                <tbody id="detailsBody">
+                <tbody id="notifBody">
                 </tbody>
             </table>
+        </form>
 
+        <div class="modal fade" id="readMessage">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Message</h4>
+                    </div>
+                    <form id="formNotif" method="POST">{% csrf_token %}
+                        <input type="hidden" id="notificId"/>
+                        <div class="modal-body">
+                            <div style="border:1px solid black;">
+                                <label>From:</label><br/>
+                                <span id="from"></span>
+                            </div>
+                            <br/>
+                            <div style="border:1px solid black;">
+                                <label>Subject:</label><br/>
+                                <span id="topic"></span>
+                            </div>
+                            <br/>
+                            <div style="border:1px solid black;">
+                                <label>Text:</label><br/>
+                                <span id="textNotif"></span>
+                                <br/><br/>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button id="closeMsgButton" type="button" class="btn btn-default" data-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
+    </div>
+
+    <div id="professorSearch" style="display: none">
+
+        <input id="sdName" type="text" placeholder="Student name"/>
+        <button id="showDetailedData" onclick="detailedInfo()">Detailed info</button>
+
+        <table class="table" class="form-control" id="detailedInfo" style="display: none">
+            <thead>
+            <tr>
+                <th>Student name</th>
+                <th>Student code</th>
+                <th>Subject code</th>
+                <th>Grade</th>
+            </tr>
+            </thead>
+            <tbody id="detailsBody">
+            </tbody>
+        </table>
 
     </div>
-    </html>
+
+
+</div>
+</html>

@@ -14,6 +14,8 @@ urlpatterns = [
     url(r'^putGrade/$', views.putGrade, name='putGrade'),
     url(r'^subjects/(?P<semesterCode>[\w-]+)/$', views.subjects, name='subjects'),
     url(r'^editHomeworkUser/(?P<homeWorkUserId>[\w-]+)/$', views.editHomeworkUser, name='editHomeworkUser'),
+    url(r'^openMessage/(?P<messageId>[\w-]+)/$', views.openMessage, name='openMessage'),
     url(r'^createHomework/$', views.createHomework, name='createHomework'),
-    url(r'^search/$', views.search, name='search')
+    url(r'^search/$', views.search, name='search'),
+    url(r'^notifications/$', views.notifications, name='notifications'),
 ]

@@ -126,7 +126,19 @@ def subjects(request, semesterCode):
     results = [m.as_json() for m in subjects]
     return HttpResponse(json.dumps(results))
 
+def notifications(request):
+    user = request.user
+    notifications = Notification.objects.filter(to_user=user)
+    notifications = notifications.extra(order_by = ['-is_read'])
+    results = [m.as_json() for m in notifications]
+    return HttpResponse(json.dumps(results))
 
+
+def openMessage(request, messageId):
+    notification = Notification.objects.filter(id=messageId)
+    notification.update(is_read=True)
+    results = [m.as_json() for m in notification]
+    return HttpResponse(json.dumps(results))
 
 def search(request):
     data_dict = json.loads(request.POST.get('json_data'))

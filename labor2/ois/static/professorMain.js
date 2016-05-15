@@ -1,9 +1,25 @@
 var fullJSON = [];
+
 $(document).ready(function () {
     $(function () {
         loadContent('professorNotifications')
     });
 
+    $("#profNotification").click(function () {
+        $.ajax({
+
+                url: "/ois/notifications",
+
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("professorNotifications");
+                professorNotifications(data);
+            });
+
+    });
 
     $("#showMarks").click(function () {
         $.ajax({
@@ -179,6 +195,18 @@ function makeJson(data) {
 }
 
 function loadContent(content) {
+    $.ajax({
+
+            url: "/ois/notifications",
+
+            beforeSend: function (xhr) {
+                //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+            }
+        })
+        .done(function (data) {
+            countMessages(data);
+        });
+
     if (content === 'logout') {
         window.location = "../login.html";
     }
@@ -197,7 +225,7 @@ function loadContent(content) {
     document.getElementById(content).style.display = 'block';
     if (content === "professorNotifications") {
         document.getElementById("profNot").className = "active";
-        professorNotifications();
+        document.getElementById("professorNotifications").style.display = 'inline';
     } else if (content === "professorMarks") {
         document.getElementById('profMarks').className = "active";
     } else if (content === "professorSearch") {
@@ -208,6 +236,21 @@ function loadContent(content) {
         professorHomework();
     }
 
+}
+
+function countMessages(data){
+    var unreadMails = 0;
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        if(!obj[i].isRead){
+            unreadMails += 1;
+        }
+    }
+    if(unreadMails != 0){
+        document.getElementById("msgs").textContent = unreadMails;
+    } else{
+        document.getElementById("msgs").textContent = "";
+    }
 }
 
 function professorSemesters(data) {
@@ -385,8 +428,53 @@ function professorHomework() {
     document.getElementById("saved").style.display = 'none';
 }
 
-function professorNotifications() {
+function professorNotifications(data) {
+    $("#notifBody").empty();
+    var table = document.getElementById("notifProf");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tableBody = table.getElementsByTagName('tbody')[0];
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var row = tableBody.insertRow(0);
+        row.className = "info";
+        var from = row.insertCell(0);
+        var subject = row.insertCell(1);
+        from.appendChild(createLinkNotification(obj[i].senderFirstName + ' ' + obj[i].senderLastName, obj[i].id,obj[i].isRead));
+        subject.innerHTML = obj[i].topic;
+    }
+}
 
+function createLinkNotification(name, not_id, isRead) {
+    var a = document.createElement('a');
+    var linkText = document.createTextNode(name);
+    if(!isRead){
+        var linkText = document.createTextNode(name + " NEW");
+    }
+    a.appendChild(linkText);
+    a.title = not_id;
+    a.onclick = function () {
+        $.ajax({
+                url: "/ois/openMessage/" + not_id
+            })
+            .done(function (data) {
+                fillMessageBox(data);
+                $("#readMessage").modal("show");
+                document.getElementById("notificId").value = not_id;
+
+            });
+
+
+    };
+    document.body.appendChild(a);
+    return a;
+}
+
+function fillMessageBox(data) {
+    var obj = JSON.parse(data);
+    document.getElementById("from").textContent = obj[0].senderFirstName + " " + obj[0].senderLastName;
+    document.getElementById("topic").textContent = obj[0].topic;
+    document.getElementById("textNotif").textContent = obj[0].text;
 }
 
 function professorStatistics() {

@@ -101,7 +101,7 @@ class Notification(models.Model):
     def as_json(self):
         return dict(receiver=self.to_user.id, senderFirstName=self.from_user.first_name,
                     senderLastName=self.from_user.last_name, isRead=self.is_read,
-                    topic=self.topic, text=self.text)
+                    topic=self.topic, text=self.text, id=self.id)
     def __str__(self):
         return "The new message to " + self.to_user.first_name + " " + self.to_user.last_name + " from " + self.from_user.first_name + " " + self.from_user.last_name
 
