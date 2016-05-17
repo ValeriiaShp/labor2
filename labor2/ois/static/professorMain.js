@@ -217,6 +217,11 @@ $(document).ready(function () {
 
     });
 
+    /*$("#sdName").autocomplete({
+        source: "/ois/search/",
+        minLength: 2
+    });*/
+
     $('#sdName').autocomplete({
         source: function (request, response) {
             $.ajax({
@@ -233,22 +238,28 @@ $(document).ready(function () {
                 success: function (data) {
 
                     response($.map(data, function (item) {
-                        alert(data);
                         return {
-                            plink: item.plink, // ссылка на страницу товара
-                            label: item.title_ru // наименование товара
+                            label: item.label,
+                            value: item.id
                         }
                     }));
                 }
             });
         },
         select: function (event, ui) {
-            // по выбору - перейти на страницу товара
-            // Вы можете делать вывод результата на экран
-            location.href = ui.item.plink;
-            return false;
+            $.ajax({
+                    url: "/ois/detailedInfo/" + ui.item.value,
+                    beforeSend: function (xhr) {
+                        //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                    }
+                })
+                .done(function (data) {
+                    detailedInfo(data)
+                });
+            ui.item.value = ui.item.label;
+            return true;
         },
-        minLength: 1 // начинать поиск с трех символов
+        minLength: 1
     });
 });
 
@@ -610,30 +621,37 @@ function professorStatistics() {
 
 }
 
-function detailedInfo() {
-    var table = document.getElementById("detailedInfo");
+function detailedInfo(data) {
+    $("#detailsBody").empty();
+    var table = document.getElementById("detailedInfoTable");
     table.tBodies[0].remove();
     table.appendChild(document.createElement('tbody'));
-    var tBody = table.getElementsByTagName('tbody')[0];
-    var name = document.getElementById("studentsAutocompl").value;
-    var nameCode = name.split("-");
-    name = nameCode[0].substring(0, nameCode[0].length - 1);
-    var obj = JSON.parse(studentsArray);
-    for (var i = 0; i <= jsonSize; i++) {
-        if (name === obj.students[i].name) {
-            var row = tBody.insertRow(0);
-            row.className = "info";
-            var studentName = row.insertCell(0);
-            var studentCode = row.insertCell(1);
-            var subjectCode = row.insertCell(2);
-            var grade = row.insertCell(3);
-            studentName.innerHTML = obj.students[i].name;
-            subjectCode.innerHTML = obj.students[i].subjectCode;
-            studentCode.innerHTML = obj.students[i].studentCode;
-            grade.innerHTML = obj.students[i].grade;
+    var tableBody = table.getElementsByTagName('tbody')[0];
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var row = tableBody.insertRow(0);
+        row.className = "info";
+        var subjectName = row.insertCell(0);
+        var subjectCode = row.insertCell(1);
+        var homeworkName = row.insertCell(2);
+        var studentAnswer = row.insertCell(3);
+        var grade = row.insertCell(4);
+        subjectName.innerHTML = obj[i].homeWorkSubjectName;
+        subjectCode.innerHTML = obj[i].homeWorkSubjectCode;
+        homeworkName.innerHTML = obj[i].homeWorkName;
+        if (obj[i].answer != null) {
+            studentAnswer.innerHTML = obj[i].answer;
+        } else {
+            studentAnswer.innerHTML = "Is not submitted yet!";
+        }
+        if (obj[i].mark != null) {
+            grade.innerHTML = obj[i].mark;
+        } else {
+
+            grade.appendChild(createLink(obj[i].selfId));
         }
     }
-    document.getElementById("detailedInfo").style.display = "block";
+    document.getElementById("detailedInfoTable").style.display='inline';
 }
 
 var data = [

@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^homework/(?P<homeWorkEditId>[\w-]+)/$', views.homework, name='homework'),
     url(r'^createHomework/$', views.createHomework, name='createHomework'),
     url(r'^search/$', views.search, name='search'),
+    url(r'^detailedInfo/(?P<detailedUserId>[\w-]+)/$', views.detailedInfo, name='detailedInfo'),
     url(r'^notifications/$', views.notifications, name='notifications'),
 ]

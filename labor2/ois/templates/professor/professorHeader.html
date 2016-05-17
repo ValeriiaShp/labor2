@@ -273,15 +273,16 @@
 
     <div id="professorSearch" style="display: none">
 
-        <input id="sdName" type="text" placeholder="Student name"/>
-        <button id="showDetailedData" onclick="detailedInfo()">Detailed info</button>
+        <input id="sdName" name="sdtName" type="text" placeholder="Student name"/>
 
-        <table class="table" class="form-control" id="detailedInfo" style="display: none">
+
+        <table class="table" class="form-control" id="detailedInfoTable" style="display: none">
             <thead>
             <tr>
-                <th>Student name</th>
-                <th>Student code</th>
+                <th>Subject name</th>
                 <th>Subject code</th>
+                <th>Homework name</th>
+                <th>Student answer</th>
                 <th>Grade</th>
             </tr>
             </thead>

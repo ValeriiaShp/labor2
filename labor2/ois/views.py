@@ -156,16 +156,24 @@ def editHomework(request):
     return HttpResponse(json.dumps(results))
 
 def search(request):
-    data_dict = json.loads(request.POST.get('json_data'))
+    data_dict = json.loads(request.GET.get('json_data'))
     print (data_dict['enteredString']['nameStartsWith']) # Should print 4
-    #search_qs = User.objects.filter(first_name__startswith=enteredString)
-   # json_res = []
-    #for record in search_qs:
-      #  json_obj = dict(
-       #         value = record.first_name + ' ' + record.last_name,
-       #         id = record.id
+    search_qs = User.objects.filter(first_name__startswith=data_dict['enteredString']['nameStartsWith'])
+    results = []
+    for user in search_qs:
+        user_json = {}
+        user_json['id'] = user.id
+        user_json['label'] = user.first_name + ' ' + user.last_name
+        user_json['value'] = user.first_name + ' ' + user.last_name
+        results.append(user_json)
+    data = json.dumps(results)
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
 
-      #  )
-      #  json_res.append(json_obj)
-    return HttpResponse(json.dumps(search_qs))
+def detailedInfo(request, detailedUserId):
+    homeworkUsers = HomeWorkUser.objects.filter(id_user=detailedUserId)
+    results = [m.as_json() for m in homeworkUsers]
+    return HttpResponse(json.dumps(results))
+
+
 
