@@ -54,10 +54,13 @@ $(document).ready(function () {
                 loadContent("profHomework");
                 professorSemesters(data, "semestersHomeworkNew");
                 $("#homeworkDivCreation").modal("show");
+                document.getElementById("hwListDiv").style.display = 'none';
             });
 
     });
-
+    $("#closeCreationForm").click(function () {
+        document.getElementById("hwListDiv").style.display = 'inline'
+    });
 
     $("#createHomework").click(function () {
         $.ajax({
@@ -107,8 +110,10 @@ $(document).ready(function () {
             type: "POST",
             url: "/ois/createHomework/",
             success: function (data) {
-                document.getElementById("saved").style.display = 'block';
                 clearForm();
+                professorHomeworksList(data);
+                document.getElementById("hwListDiv").style.display = 'inline';
+                $('#homeworkDivCreation').modal('hide');
             }
         });
         return false;
@@ -196,7 +201,6 @@ $(document).ready(function () {
 
             });
     });
-
 
 
     $('#homeworkSelect').change(function () {
@@ -319,7 +323,7 @@ function countMessages(data) {
 }
 
 function professorSemesters(data, selectId) {
-    if (selectId == 'semesters')
+    if (selectId == 'semesters') {
         $('#semesters')
             .find('option')
             .remove()
@@ -327,7 +331,14 @@ function professorSemesters(data, selectId) {
             .append('<option value="null" disabled>Select semester</option>')
             .val('null')
         ;
-    if (selectId == 'semestersHomework')
+        $('#subjectSelect')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+    }
+    if (selectId == 'semestersHomework') {
         $('#semestersHomework')
             .find('option')
             .remove()
@@ -335,7 +346,15 @@ function professorSemesters(data, selectId) {
             .append('<option value="null" disabled>Select semester</option>')
             .val('null')
         ;
-    if (selectId == 'semestersHomeworkNew')
+        $('#subjectSelectHome')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+        ;
+    }
+    if (selectId == 'semestersHomeworkNew') {
         $('#semestersHomeworkNew')
             .find('option')
             .remove()
@@ -343,7 +362,14 @@ function professorSemesters(data, selectId) {
             .append('<option value="null" disabled>Select semester</option>')
             .val('null')
         ;
-
+        $('#subjectSelectHomeNew')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+        ;
+    }
     var selectDropDown = document.getElementById(selectId);
 
     var obj = JSON.parse(data);

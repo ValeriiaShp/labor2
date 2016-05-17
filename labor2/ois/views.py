@@ -97,8 +97,6 @@ def putGrade(request):
 
 def createHomework(request):
     context = {}
-    print('got here')
-    print(request.POST["subjectHWCreation"] + ' subjectHWcreation')
     idSubject = request.POST["subjectHWCreation"]
     subjectC = Subject.objects.get(pk = idSubject)
     homeworkDescription = request.POST["hwDescriptionCreation"]
@@ -113,7 +111,8 @@ def createHomework(request):
             hwu.save()
             notification = Notification(to_user=su.id_user, from_user=request.user, topic="You have a new homework",text=messageText )
             notification.save()
-    results = [h.as_json()]
+    homeworks = HomeWork.objects.filter(subject=subjectC)
+    results = [m.as_json() for m in homeworks]
     return HttpResponse(json.dumps(results))
 
 def semesters(request):

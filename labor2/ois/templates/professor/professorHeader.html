@@ -130,6 +130,7 @@
 
 
         <br/>
+        <div id="hwListDiv">
         <form role="form">
             <table class="table" id="hwList">
                 <thead>
@@ -142,7 +143,7 @@
                 </tbody>
             </table>
         </form>
-
+</div>
         <div class="modal fade" id="homeworkEdit">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -174,49 +175,51 @@
             </div>
         </div>
 
-        <div class="modal-dialog" style="display: none; z-index: 500000000" id="homeworkDivCreation">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div>
-                        <h4 class="modal-title">Create homework</h4>
-                    </div>
-                    <form id="creationForm" onsubmit="return validateFormCreate()" method="POST">{% csrf_token %}
-                        <div class="modal-body">
-                            <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
-                            <label>Semester <span style="color: red">*</span></label><br/>
-                            <select id="semestersHomeworkNew">
-                            </select>
 
-                            <br/>
-                            <label>Subject <span style="color: red">*</span></label><br/>
-                            <select id="subjectSelectHomeNew">
-                                <option disabled>Select subject</option>
-                            </select>
-                            <br/><br/>
-                            <label>Homework name <span style="color: red">*</span></label><br/>
-                            <input name="hwNameCreation" id="hwNameCreationId"/>
-                            <br/><br/>
-
-                            <label>Homework description <span style="color: red">*</span></label><br/>
-                            <input name="hwDescriptionCreation" id="hwDescriptionCreationId"/>
-                            <br/><br/>
-
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" id="saveHWButton" class="btn btn-primary pull-right">Save
-                                changes
-                            </button>
-
-                        </div>
-                        <label style="display: none" id="saved">Homework is saved successfully!</label>
-                    </form>
-
+    </div>
+    <div class="modal-dialog" style="display: none; z-index: 500000000" id="homeworkDivCreation">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h4 class="modal-title">Create homework</h4>
                 </div>
+                <form id="creationForm" onsubmit="return validateFormCreate()" method="POST">{% csrf_token %}
+                    <div class="modal-body">
+                        <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
+                        <label>Semester <span style="color: red">*</span></label><br/>
+                        <select id="semestersHomeworkNew">
+                        </select>
+
+                        <br/>
+                        <label>Subject <span style="color: red">*</span></label><br/>
+                        <select id="subjectSelectHomeNew">
+                            <option disabled>Select subject</option>
+                        </select>
+                        <br/><br/>
+                        <label>Homework name <span style="color: red">*</span></label><br/>
+                        <input name="hwNameCreation" id="hwNameCreationId"/>
+                        <br/><br/>
+
+                        <label>Homework description <span style="color: red">*</span></label><br/>
+                        <input name="hwDescriptionCreation" id="hwDescriptionCreationId"/>
+                        <br/><br/>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="closeCreationForm" class="btn btn-default" data-dismiss="modal">Close
+                        </button>
+                        <button type="submit" id="saveHWButton" class="btn btn-primary pull-right">Save
+                            changes
+                        </button>
+
+                    </div>
+                    <label style="display: none" id="saved">Homework is saved successfully!</label>
+                </form>
+
             </div>
         </div>
     </div>
-
     <div id="professorNotifications" style="display: none">
         <form role="form">
             <table class="table" id="notifProf">
