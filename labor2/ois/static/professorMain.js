@@ -41,6 +41,24 @@ $(document).ready(function () {
         loadContent("professorSearch");
     });
 
+    $("#createNewHomeworkButton").click(function () {
+        $.ajax({
+
+                url: "/ois/semesters",
+
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                loadContent("profHomework");
+                professorSemesters(data, "semestersHomeworkNew");
+                $("#homeworkDivCreation").modal("show");
+            });
+
+    });
+
+
     $("#createHomework").click(function () {
         $.ajax({
 
@@ -70,6 +88,19 @@ $(document).ready(function () {
         return false;
     });
 
+    $('#formEdit').submit(function () {
+        $.ajax({
+            data: $(this).serialize(),
+            type: "POST",
+            url: "/ois/editHomework/",
+            success: function (data) {
+                $('#homeworkEdit').modal('hide');
+                professorHomeworksList(data);
+            }
+        });
+        return false;
+    });
+
     $('#creationForm').submit(function () {
         $.ajax({
             data: $(this).serialize(),
@@ -85,7 +116,6 @@ $(document).ready(function () {
 
     $('#semesters').change(function () {
         document.getElementById("subjectsDiv").style.display = 'none';
-        document.getElementById("homeworkDiv").style.display = 'none';
 
 
         $.ajax({
@@ -112,8 +142,19 @@ $(document).ready(function () {
 
     });
 
+    $('#semestersHomeworkNew').change(function () {
+        $.ajax({
+                url: "/ois/subjects/" + this.options[this.selectedIndex].value
+            })
+            .done(function (data) {
+                loadContent("profHomework");
+                professorSubjects(data, "subjectSelectHomeNew");
+            });
+
+    });
+
     $('#subjectSelect').change(function () {
-        document.getElementById("homeworkDiv").style.display = 'none';
+        document.getElementById("homeworkDiv").style.display = 'inline';
         $.ajax({
                 url: "/ois/homeworks/" + this.options[this.selectedIndex].value,
                 beforeSend: function (xhr) {
@@ -129,8 +170,34 @@ $(document).ready(function () {
 
     $('#subjectSelectHome').change(function () {
         var i = this.options[this.selectedIndex].value;
-        document.getElementById("subjectHWCreationId").value = this.options[this.selectedIndex].value;
+        //document.getElementById("homeworkDivCreation").style.display = 'block';
+        $.ajax({
+                url: "/ois/homeworks/" + this.options[this.selectedIndex].value,
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+                professorHomeworksList(data);
+            });
     });
+
+    $('#subjectSelectHomeNew').change(function () {
+        var i = this.options[this.selectedIndex].value;
+        //document.getElementById("homeworkDivCreation").style.display = 'block';
+        document.getElementById("subjectHWCreationId").value = this.options[this.selectedIndex].value;
+        $.ajax({
+                url: "/ois/homeworks/" + this.options[this.selectedIndex].value,
+                beforeSend: function (xhr) {
+                    //xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
+                }
+            })
+            .done(function (data) {
+
+            });
+    });
+
+
 
     $('#homeworkSelect').change(function () {
         $.ajax({
@@ -230,43 +297,52 @@ function loadContent(content) {
         document.getElementById('profSearch').className = "active";
     } else if (content === "profHomework") {
         document.getElementById('profHomework').className = "active";
-        document.getElementById("creationForm").style.display = 'block';
+        document.getElementById("creationForm").style.display = 'inline';
         professorHomework();
     }
 
 }
 
-function countMessages(data){
+function countMessages(data) {
     var unreadMails = 0;
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
-        if(!obj[i].isRead){
+        if (!obj[i].isRead) {
             unreadMails += 1;
         }
     }
-    if(unreadMails != 0){
+    if (unreadMails != 0) {
         document.getElementById("msgs").textContent = unreadMails;
-    } else{
+    } else {
         document.getElementById("msgs").textContent = "";
     }
 }
 
 function professorSemesters(data, selectId) {
-    $('#semesters')
-        .find('option')
-        .remove()
-        .end()
-        .append('<option value="null" disabled>Select semester</option>')
-        .val('null')
-    ;
-
-    $('#semestersHomework')
-        .find('option')
-        .remove()
-        .end()
-        .append('<option value="null" disabled>Select semester</option>')
-        .val('null')
-    ;
+    if (selectId == 'semesters')
+        $('#semesters')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select semester</option>')
+            .val('null')
+        ;
+    if (selectId == 'semestersHomework')
+        $('#semestersHomework')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select semester</option>')
+            .val('null')
+        ;
+    if (selectId == 'semestersHomeworkNew')
+        $('#semestersHomeworkNew')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select semester</option>')
+            .val('null')
+        ;
 
     var selectDropDown = document.getElementById(selectId);
 
@@ -281,22 +357,30 @@ function professorSemesters(data, selectId) {
 
 function professorSubjects(data, selectId) {
     document.getElementById("subjectsDiv").style.display = 'inline';
-
-    $('#subjectSelect')
-        .find('option')
-        .remove()
-        .end()
-        .append('<option value="null" disabled>Select subject</option>')
-        .val('null')
-    ;
-    $('#subjectSelectHome')
-        .find('option')
-        .remove()
-        .end()
-        .append('<option value="null" disabled>Select subject</option>')
-        .val('null')
-    ;
-
+    if (selectId == 'subjectSelect')
+        $('#subjectSelect')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+        ;
+    if (selectId == 'subjectSelectHome')
+        $('#subjectSelectHome')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+        ;
+    if (selectId == 'subjectSelectHomeNew')
+        $('#subjectSelectHomeNew')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="null" disabled>Select subject</option>')
+            .val('null')
+        ;
     var selectDropDown = document.getElementById(selectId);
 
     var obj = JSON.parse(data);
@@ -326,6 +410,23 @@ function professorHomeworks(data) {
         opt.value = obj[i].selfId;
         opt.innerHTML = obj[i].name + " - " + obj[i].subjectCode;
         selectDropDown.appendChild(opt);
+    }
+}
+
+function professorHomeworksList(data) {
+    $("#hwBody").empty();
+    var table = document.getElementById("hwList");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tableBody = table.getElementsByTagName('tbody')[0];
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var row = tableBody.insertRow(0);
+        row.className = "info";
+        var name = row.insertCell(0);
+        var description = row.insertCell(1);
+        name.appendChild(createLinkHomeworkEdit(obj[i].name, obj[i].selfId));
+        description.innerHTML = obj[i].description;
     }
 }
 
@@ -397,6 +498,7 @@ function fillEditData(data, hwId) {
 
 function professorHomework() {
     document.getElementById('professorHomework').style.display = 'block';
+    //document.getElementById('homeworkDivCreation').style.display = 'block';
     document.getElementById("saved").style.display = 'none';
 }
 
@@ -412,15 +514,38 @@ function professorNotifications(data) {
         row.className = "info";
         var from = row.insertCell(0);
         var subject = row.insertCell(1);
-        from.appendChild(createLinkNotification(obj[i].senderFirstName + ' ' + obj[i].senderLastName, obj[i].id,obj[i].isRead));
+        from.appendChild(createLinkNotification(obj[i].senderFirstName + ' ' + obj[i].senderLastName, obj[i].id, obj[i].isRead));
         subject.innerHTML = obj[i].topic;
     }
+}
+
+function createLinkHomeworkEdit(name, hw_id) {
+    var a = document.createElement('a');
+    var linkText = document.createTextNode(name);
+    a.appendChild(linkText);
+    a.title = hw_id;
+    a.onclick = function () {
+        document.getElementById("hiddenInputHomeworkEdit").value = hw_id;
+        $.ajax({
+                url: "/ois/homework/" + hw_id
+            })
+            .done(function (data) {
+                fillHomeworkEditModal(data);
+                $("#homeworkEdit").modal("show");
+                document.getElementById("hiddenInputHomeworkEdit").value = hw_id;
+
+            });
+
+
+    };
+    document.body.appendChild(a);
+    return a;
 }
 
 function createLinkNotification(name, not_id, isRead) {
     var a = document.createElement('a');
     var linkText = document.createTextNode(name);
-    if(!isRead){
+    if (!isRead) {
         var linkText = document.createTextNode(name + " NEW");
     }
     a.appendChild(linkText);
@@ -447,6 +572,12 @@ function fillMessageBox(data) {
     document.getElementById("from").textContent = obj[0].senderFirstName + " " + obj[0].senderLastName;
     document.getElementById("topic").textContent = obj[0].topic;
     document.getElementById("textNotif").textContent = obj[0].text;
+}
+
+function fillHomeworkEditModal(data) {
+    var obj = JSON.parse(data);
+    document.getElementById("homeworkNameEdit").value = obj[0].name;
+    document.getElementById("homeworkDescriptionEdit").value = obj[0].description;
 }
 
 function professorStatistics() {

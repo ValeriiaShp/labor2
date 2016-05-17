@@ -22,7 +22,7 @@
                         class="badge" id="msgs"></span></a>
                 </li>
                 <li id="profMarks"><a id="showMarks">Marks</a></li>
-                <li id="profHomework"><a id="createHomework" onclick="loadContent('profHomework')">Create homework</a>
+                <li id="profHomework"><a id="createHomework" onclick="loadContent('profHomework')">Homeworks</a>
                 </li>
                 <li id="profSearch"><a id="profSearch">Search</a></li>
                 <li><a href="../logout/">Logout</a></li>
@@ -114,9 +114,67 @@
 
     <div id="professorHomework" style="display: none">
 
+            <div id="semestersDiv" style="display: inline">
+            <label>Semester</label><br/>
+                <select id="semestersHomework">
+                </select>
+            </div>
+            <br/>
+            <div style="display: inline">
+                <label>Subject</label><br/>
+                <select id="subjectSelectHome">
+                    <option disabled>Select subject</option>
+                </select>
+            </div>
+            <button class="btn pull-right" id="createNewHomeworkButton">Create</button>
+
 
         <br/>
-        <div class="modal-dialog" id="homeworkDiv">
+        <form role="form">
+            <table class="table" id="hwList">
+                <thead>
+                <tr>
+                    <th>Homework name</th>
+                    <th>Homework description</th>
+                </tr>
+                </thead>
+                <tbody id="hwBody">
+                </tbody>
+            </table>
+        </form>
+
+        <div class="modal fade" id="homeworkEdit">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Grade homework</h4>
+                    </div>
+                    <form id="formEdit" onsubmit="return validateForm()" method="POST">{% csrf_token %}
+                        <input type="hidden" id="hiddenInputHomeworkEdit" name="hiddenInputHomeworkEdit"/>
+                        <div class="modal-body">
+
+                                <label>Homework name:</label><br/>
+                                <input id="homeworkNameEdit" name="homeworkNameEdit"/>
+                                <br/><br/>
+
+                                <label>Homework description:</label><br/>
+                                <input id="homeworkDescriptionEdit" name="homeworkDescriptionEdit"/>
+                                <br/><br/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                            </button>
+                            <button type="submit" id="saveeditedHomework" class="btn btn-primary">Save
+                                changes
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-dialog" style="display: none; z-index: 500000000" id="homeworkDivCreation">
             <div class="modal-content">
                 <div class="modal-header">
                     <div>
@@ -125,19 +183,15 @@
                     <form id="creationForm" onsubmit="return validateFormCreate()" method="POST">{% csrf_token %}
                         <div class="modal-body">
                             <input type="hidden" id="subjectHWCreationId" name="subjectHWCreation"/>
-
                             <label>Semester <span style="color: red">*</span></label><br/>
-                            <div id="semestersDiv">
-                                <select name="semestersHomework" id="semestersHomework">
-                                </select>
-                            </div>
-                            <br/>
-
-                            <label>Subject <span style="color: red">*</span></label><br/>
-                            <select id="subjectSelectHome">
-                                <option disabled>Select subject</option>
+                            <select id="semestersHomeworkNew">
                             </select>
 
+                            <br/>
+                            <label>Subject <span style="color: red">*</span></label><br/>
+                            <select id="subjectSelectHomeNew">
+                                <option disabled>Select subject</option>
+                            </select>
                             <br/><br/>
                             <label>Homework name <span style="color: red">*</span></label><br/>
                             <input name="hwNameCreation" id="hwNameCreationId"/>

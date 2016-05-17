@@ -97,6 +97,8 @@ def putGrade(request):
 
 def createHomework(request):
     context = {}
+    print('got here')
+    print(request.POST["subjectHWCreation"] + ' subjectHWcreation')
     idSubject = request.POST["subjectHWCreation"]
     subjectC = Subject.objects.get(pk = idSubject)
     homeworkDescription = request.POST["hwDescriptionCreation"]
@@ -138,6 +140,20 @@ def openMessage(request, messageId):
     notification = Notification.objects.filter(id=messageId)
     notification.update(is_read=True)
     results = [m.as_json() for m in notification]
+    return HttpResponse(json.dumps(results))
+
+def homework(request, homeWorkEditId):
+    homework = HomeWork.objects.filter(id=homeWorkEditId)
+    results = [m.as_json() for m in homework]
+    return HttpResponse(json.dumps(results))
+
+def editHomework(request):
+    homework = HomeWork.objects.get(pk=request.POST["hiddenInputHomeworkEdit"])
+    homework.name=request.POST["homeworkNameEdit"]
+    homework.description=request.POST["homeworkDescriptionEdit"]
+    homework.save()
+    homeWorks = HomeWork.objects.filter(subject=homework.subject)
+    results = [m.as_json() for m in homeWorks]
     return HttpResponse(json.dumps(results))
 
 def search(request):
