@@ -1,4 +1,6 @@
 var fullJSON = [];
+var isMark = true;
+var detailedInfoJson;
 
 $(document).ready(function () {
     $(function () {
@@ -217,10 +219,6 @@ $(document).ready(function () {
 
     });
 
-    /*$("#sdName").autocomplete({
-        source: "/ois/search/",
-        minLength: 2
-    });*/
 
     $('#sdName').autocomplete({
         source: function (request, response) {
@@ -263,16 +261,6 @@ $(document).ready(function () {
     });
 });
 
-var dataJson = [];
-function makeJson(data) {
-    fullJSON = data;
-    var obj = JSON.parse(data);
-
-    for (var i = 0; i < obj.length; i++) {
-        var item = obj[i];
-        dataJson.push(item.value);
-    }
-}
 
 function loadContent(content) {
     $.ajax({
@@ -307,6 +295,7 @@ function loadContent(content) {
         document.getElementById("profNot").className = "active";
         document.getElementById("professorNotifications").style.display = 'inline';
     } else if (content === "professorMarks") {
+        isMark = true;
         document.getElementById('profMarks').className = "active";
     } else if (content === "professorSearch") {
         document.getElementById('profSearch').className = "active";
@@ -548,7 +537,10 @@ function professorNotifications(data) {
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
         var row = tableBody.insertRow(0);
-        row.className = "info";
+        if(!obj[i].isRead){
+            row.bgColor = "green";
+        }else
+            row.className = "info";
         var from = row.insertCell(0);
         var subject = row.insertCell(1);
         from.appendChild(createLinkNotification(obj[i].senderFirstName + ' ' + obj[i].senderLastName, obj[i].id, obj[i].isRead));
@@ -587,6 +579,7 @@ function createLinkNotification(name, not_id, isRead) {
     }
     a.appendChild(linkText);
     a.title = not_id;
+    a.style.color = "black"
     a.onclick = function () {
         $.ajax({
                 url: "/ois/openMessage/" + not_id
@@ -617,10 +610,6 @@ function fillHomeworkEditModal(data) {
     document.getElementById("homeworkDescriptionEdit").value = obj[0].description;
 }
 
-function professorStatistics() {
-
-}
-
 function detailedInfo(data) {
     $("#detailsBody").empty();
     var table = document.getElementById("detailedInfoTable");
@@ -648,18 +637,36 @@ function detailedInfo(data) {
             grade.innerHTML = obj[i].mark;
         } else {
 
-            grade.appendChild(createLink(obj[i].selfId));
+            grade.innerHTML = "Not graded yet!"
         }
     }
-    document.getElementById("detailedInfoTable").style.display='inline';
+    document.getElementById("detailedInfoTable").style.display = 'inline';
 }
 
-var data = [
-    {value: "John Doe - 124578"},
-    {value: "Anna Smith - 135478"},
-    {value: "Peter Jones - 137964"},
-];
+function createLinkGrade(homework_id, initialJson) {
+    var a = document.createElement('a');
+    var linkText = document.createTextNode("Not graded yet");
+    a.appendChild(linkText);
+    a.title = "Not graded yet";
+    /* a.href = "/ois/editHomeworkUser/" + id;*/
+    a.id = homework_id;
+    a.class = "editHomeworkUser";
+    a.onclick = function () {
+        $.ajax({
+                url: "/ois/editHomeworkUser/" + homework_id
+            })
+            .done(function (data) {
+                document.getElementById("hiddenInputId").textContent = homework_id;
+                fillEditData(data, homework_id);
+                $("#changeGrade").modal("show");
+                isMark = false;
+                detailedInfoJson = initialJson;
+            });
 
+    };
+    document.body.appendChild(a);
+    return a;
+}
 
 function validateForm() {
     document.getElementById("errorLabel").style.display = "none";

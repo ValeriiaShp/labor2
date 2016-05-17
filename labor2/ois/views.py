@@ -1,5 +1,6 @@
 import json
 import logging
+from django.db.models import Q
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -157,15 +158,16 @@ def editHomework(request):
 
 def search(request):
     data_dict = json.loads(request.GET.get('json_data'))
-    print (data_dict['enteredString']['nameStartsWith']) # Should print 4
-    search_qs = User.objects.filter(first_name__startswith=data_dict['enteredString']['nameStartsWith'])
+    enteredString = data_dict['enteredString']['nameStartsWith']
+    search_qs = User.objects.filter(Q(first_name__startswith=enteredString)|Q(last_name__startswith=enteredString))
     results = []
     for user in search_qs:
-        user_json = {}
-        user_json['id'] = user.id
-        user_json['label'] = user.first_name + ' ' + user.last_name
-        user_json['value'] = user.first_name + ' ' + user.last_name
-        results.append(user_json)
+        if is_student(user):
+            user_json = {}
+            user_json['id'] = user.id
+            user_json['label'] = user.first_name + ' ' + user.last_name
+            user_json['value'] = user.first_name + ' ' + user.last_name
+            results.append(user_json)
     data = json.dumps(results)
     mimetype = 'application/json'
     return HttpResponse(data, mimetype)
