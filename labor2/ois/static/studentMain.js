@@ -174,6 +174,25 @@ function loadContent(content) {
     //enable one
     document.getElementById(content).style.display = 'block';
 
+    document.getElementById('studNotification').className = "";
+    document.getElementById('studResults').className = "";
+    document.getElementById('studSubmussions').className = "";
+    document.getElementById('studGroups').className = "";
+
+    
+
+    //enable one
+    document.getElementById(content).style.display = 'block';
+    if (content === "notifications") {
+        document.getElementById("studNotification").className = "active";
+    } else if (content === "studentStudyResults") {
+        document.getElementById('studResults').className = "active";
+    } else if (content === "studentWorkSubmission") {
+        document.getElementById('studSubmussions').className = "active";
+    } else if (content === "studentStudentGroups") {
+        document.getElementById('studGroups').className = "active";
+    }
+
 }
 
 function studentNotifications(data) {
