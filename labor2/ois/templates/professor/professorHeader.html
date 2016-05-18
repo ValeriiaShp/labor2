@@ -114,36 +114,36 @@
 
     <div id="professorHomework" style="display: none">
 
-            <div id="semestersDiv" style="display: inline">
+        <div id="semestersDiv" style="display: inline">
             <label>Semester</label><br/>
-                <select id="semestersHomework">
-                </select>
-            </div>
-            <br/>
-            <div style="display: inline">
-                <label>Subject</label><br/>
-                <select id="subjectSelectHome">
-                    <option disabled>Select subject</option>
-                </select>
-            </div>
-            <button class="btn pull-right" id="createNewHomeworkButton">Create</button>
+            <select id="semestersHomework">
+            </select>
+        </div>
+        <br/>
+        <div style="display: inline">
+            <label>Subject</label><br/>
+            <select id="subjectSelectHome">
+                <option disabled>Select subject</option>
+            </select>
+        </div>
+        <button class="btn pull-right" id="createNewHomeworkButton">Create</button>
 
 
         <br/>
         <div id="hwListDiv">
-        <form role="form">
-            <table class="table" id="hwList">
-                <thead>
-                <tr>
-                    <th>Homework name</th>
-                    <th>Homework description</th>
-                </tr>
-                </thead>
-                <tbody id="hwBody">
-                </tbody>
-            </table>
-        </form>
-</div>
+            <form role="form">
+                <table class="table" id="hwList">
+                    <thead>
+                    <tr>
+                        <th>Homework name</th>
+                        <th>Homework description</th>
+                    </tr>
+                    </thead>
+                    <tbody id="hwBody">
+                    </tbody>
+                </table>
+            </form>
+        </div>
         <div class="modal fade" id="homeworkEdit">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -154,13 +154,13 @@
                         <input type="hidden" id="hiddenInputHomeworkEdit" name="hiddenInputHomeworkEdit"/>
                         <div class="modal-body">
 
-                                <label>Homework name:</label><br/>
-                                <input id="homeworkNameEdit" name="homeworkNameEdit"/>
-                                <br/><br/>
+                            <label>Homework name:</label><br/>
+                            <input id="homeworkNameEdit" name="homeworkNameEdit"/>
+                            <br/><br/>
 
-                                <label>Homework description:</label><br/>
-                                <input id="homeworkDescriptionEdit" name="homeworkDescriptionEdit"/>
-                                <br/><br/>
+                            <label>Homework description:</label><br/>
+                            <input id="homeworkDescriptionEdit" name="homeworkDescriptionEdit"/>
+                            <br/><br/>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Close
@@ -237,31 +237,33 @@
         <div class="modal fade" id="readMessage">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header" style="background-color: #afd9ee">
                         <h4 class="modal-title">Message</h4>
                     </div>
                     <form id="formNotif" method="POST">{% csrf_token %}
                         <input type="hidden" id="notificId"/>
-                        <div class="modal-body">
-                            <div style="border:1px solid black;">
+                        <div class="modal-body" style="background-color: #bce8f1">
+                            <div>
                                 <label>From:</label><br/>
                                 <span id="from"></span>
                             </div>
-                            <br/>
-                            <div style="border:1px solid black;">
+                            <hr>
+
+                            <div>
                                 <label>Subject:</label><br/>
                                 <span id="topic"></span>
                             </div>
-                            <br/>
-                            <div style="border:1px solid black;">
+                            <hr>
+                            <div>
                                 <label>Text:</label><br/>
                                 <span id="textNotif"></span>
                                 <br/><br/>
                             </div>
 
                         </div>
-                        <div class="modal-footer">
-                            <button id="closeMsgButton" type="button" class="btn btn-default" data-dismiss="modal">Close
+                        <div class="modal-footer" style="background-color: #afd9ee">
+                            <button id="closeMsgButton" type="button" style="background-color: #a6e1ec"
+                                    class="btn btn-default" data-dismiss="modal">Close
                             </button>
                         </div>
                     </form>
@@ -276,7 +278,7 @@
         <input id="sdName" name="sdtName" type="text" placeholder="Student name"/>
 
 
-        <table class="table" class="form-control" id="detailedInfoTable" style="display: none">
+        <table class="table" id="detailedInfoTable" style="display: none">
             <thead>
             <tr>
                 <th>Subject name</th>

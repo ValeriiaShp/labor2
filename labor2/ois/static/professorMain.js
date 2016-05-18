@@ -4,10 +4,19 @@ var detailedInfoJson;
 
 $(document).ready(function () {
     $(function () {
-        loadContent('professorNotifications')
+        loadNotificationTable();
     });
 
     $("#profNotification").click(function () {
+        loadNotificationTable();
+    });
+
+    $("#closeMsgButton").click(function () {
+        $("#readMessage").modal('hide');
+        loadNotificationTable();
+    });
+
+    function loadNotificationTable() {
         $.ajax({
 
                 url: "/ois/notifications",
@@ -20,8 +29,7 @@ $(document).ready(function () {
                 loadContent("professorNotifications");
                 professorNotifications(data);
             });
-
-    });
+    };
 
     $("#showMarks").click(function () {
         $.ajax({
@@ -537,9 +545,9 @@ function professorNotifications(data) {
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
         var row = tableBody.insertRow(0);
-        if(!obj[i].isRead){
-            row.bgColor = "green";
-        }else
+        if (!obj[i].isRead) {
+            row.bgColor = "LightGreen ";
+        } else
             row.className = "info";
         var from = row.insertCell(0);
         var subject = row.insertCell(1);
@@ -575,11 +583,11 @@ function createLinkNotification(name, not_id, isRead) {
     var a = document.createElement('a');
     var linkText = document.createTextNode(name);
     if (!isRead) {
-        var linkText = document.createTextNode(name + " NEW");
+        var linkText = document.createTextNode(name + "(NEW)");
     }
     a.appendChild(linkText);
     a.title = not_id;
-    a.style.color = "black"
+    a.style.color = "black";
     a.onclick = function () {
         $.ajax({
                 url: "/ois/openMessage/" + not_id
@@ -671,6 +679,13 @@ function createLinkGrade(homework_id, initialJson) {
 function validateForm() {
     document.getElementById("errorLabel").style.display = "none";
     var grade = document.getElementById("homeworkGrade").value;
+    var label = document.getElementById("errorLabel");
+    if (isNaN(parseInt(grade))) {
+        event.preventDefault();
+        document.getElementById("homeworkGrade").value = "";
+        label.value = "Please enter a number!"
+        label.style.display = "block";
+    }
     if (grade < 1 || grade > 5) {
         event.preventDefault();
         document.getElementById("homeworkGrade").value = "";
