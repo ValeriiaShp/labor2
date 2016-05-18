@@ -1,31 +1,3 @@
-var notificationsJSON = {
-    "notifications": [
-        {
-            "id" : "msg1",
-            "sender_name": "Teet Puu",
-            "sender_email": "teet.puu@example.com",
-            "content": "Hi. This is a message from Teet Puu",
-            "unread": true
-        },
-        {
-            "id" : "msg2",
-            "sender_name": "Teet Tee",
-            "sender_email": "teet.Tee@example.com",
-            "content": "Hi. This is a message from Teet Tee",
-            "unread": false
-        },
-        {
-            "id" : "msg3",
-            "sender_name": "Teet Teepuu",
-            "sender_email": "teet.teepuu@example.com",
-            "content": "Hi. This is a message from Teet Teepuu",
-            "unread": true
-        }
-    ]
-};
-
-var unreadNotifications = 0;
-
 function viewHomeWork(hw_id) {
 
 }
@@ -86,16 +58,34 @@ function studentSubjects(data) {
     }
 }
 
+function loadNotificationTable() {
+        $.ajax({
+
+                url: "/ois/notifications",
+            })
+            .done(function (data) {
+                studentNotifications(data);
+            });
+    };
+
+
 $(document).ready(function () {
     $(function(){
-        //$("#includedContent").load("studentHeader.html");
-
-        initNotifications();
-        //initSubmissions();
-        
-        loadContent('notifications');
+        loadNotificationTable();        
+        loadContent("notifications");
     });
 
+    $("#studNotification").click(function () {
+        loadNotificationTable();
+        loadContent("notifications");
+    });
+
+    $("#closeMsgButton").click(function () {
+        $("#readMessage").modal('hide');
+        loadNotificationTable();
+    });
+
+    
     $("#studResults").click(function () {
         $.ajax({
 
@@ -172,6 +162,7 @@ $(document).ready(function () {
 
 
 function loadContent(content) {
+    loadNotificationTable();
     if (content === 'logout') {
         window.location = "../login.html";
     }
@@ -185,7 +176,10 @@ function loadContent(content) {
 
 }
 
-function initNotifications() {
+function studentNotifications(data) {
+
+    notificationsJSON = JSON.parse(data)
+
     unreadNotifications = 0;
 
     var table = document.getElementById("notificationsTable");
@@ -193,17 +187,34 @@ function initNotifications() {
     table.appendChild(document.createElement('tbody'));
     var tBody = table.getElementsByTagName('tbody')[0];
 
-    for (var i = 0; i < notificationsJSON.notifications.length; i++) {
+    for (var i = 0; i < notificationsJSON.length; i++) {
+        var row = tBody.insertRow(0);
+        var from = row.insertCell(0);
+        var subject = row.insertCell(1);
+        from.appendChild(createLinkNotification(notificationsJSON[i].senderFirstName + ' ' + notificationsJSON[i].senderLastName, notificationsJSON[i].id, notificationsJSON[i].isRead));
+        subject.innerHTML = notificationsJSON[i].topic;
+
+        if (!notificationsJSON[i].isRead ) {
+
+            unreadNotifications++;
+        }
+
+
+    }
+
+    populateUnreadNotificationsToNavbar();
+
+/*
+    for (var i = 0; i < notificationsJSON.length; i++) {
 
         var row1 = tBody.insertRow(0);
         var nameCell = row1.insertCell(0);
-        //nameCell.innerHTML = notificationsJSON.notifications[i].sender_name;
 
         var span1 = document.createElement('span');
         nameCell.appendChild(span1);
 
         var span2 = document.createElement('span');
-        span2.innerHTML = notificationsJSON.notifications[i].sender_name + " ";
+        span2.innerHTML = notificationsJSON[i].senderFirstName + " " + notificationsJSON[i].senderLastName + " ";
         span1.appendChild(span2);
 
         var span3 = document.createElement('span');
@@ -214,28 +225,51 @@ function initNotifications() {
 
 
         var emailCell = row1.insertCell(1);
-        emailCell.innerHTML = notificationsJSON.notifications[i].sender_email;
+        emailCell.innerHTML = notificationsJSON[i].topic;
 
-        var contentId = "content" + notificationsJSON.notifications[i].id;
-
-        var row2 = tBody.insertRow(1);
-        row2.id = contentId;
-        var contentCell = row2.insertCell(0);
-        contentCell.colSpan = 2;
-        contentCell.innerHTML = notificationsJSON.notifications[i].content;
-
-        //row1.onclick(function() {alert(notificationsJSON.notifications[i].content)});
-
-        contentCell.style.display = 'none';
-        if (notificationsJSON.notifications[i].unread ) {
+        if (!notificationsJSON[i].isRead ) {
 
             unreadNotifications++;
         } else {
             span3.style.display = 'none';
         }
     }
+*/
+    
+}
 
-    populateUnreadNotificationsToNavbar();
+function createLinkNotification(name, not_id, isRead) {
+    var a = document.createElement('a');
+    var linkText = document.createElement("span");
+    linkText.innerHTML = name;
+    if (!isRead) {
+        linkText.innerHTML = (name + " <span class='badge'>NEW</span>");
+    }
+    a.appendChild(linkText);
+    a.title = not_id;
+    a.style.color = "black";
+    a.onclick = function () {
+        $.ajax({
+                url: "/ois/openMessage/" + not_id
+            })
+            .done(function (data) {
+                fillMessageBox(data);
+                $("#readMessage").modal("show");
+                document.getElementById("notificId").value = not_id;
+
+            });
+
+
+    };
+    document.body.appendChild(a);
+    return a;
+}
+
+function fillMessageBox(data) {
+    var obj = JSON.parse(data);
+    document.getElementById("from").textContent = obj[0].senderFirstName + " " + obj[0].senderLastName;
+    document.getElementById("topic").textContent = obj[0].topic;
+    document.getElementById("textNotif").textContent = obj[0].text;
 }
 
 function initGrades(data) {
@@ -451,8 +485,8 @@ function submitTask(submitid, btn) {
     group.innerHTML = initText;*/
 }
 
-
+/*
 function upd() {
     notificationsJSON.notifications[0].unread = false;
     initNotifications();
-}
+}*/

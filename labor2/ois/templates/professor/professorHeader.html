@@ -237,12 +237,12 @@
         <div class="modal fade" id="readMessage">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header" style="background-color: #afd9ee">
+                    <div class="modal-header">
                         <h4 class="modal-title">Message</h4>
                     </div>
                     <form id="formNotif" method="POST">{% csrf_token %}
                         <input type="hidden" id="notificId"/>
-                        <div class="modal-body" style="background-color: #bce8f1">
+                        <div class="modal-body">
                             <div>
                                 <label>From:</label><br/>
                                 <span id="from"></span>
@@ -261,8 +261,8 @@
                             </div>
 
                         </div>
-                        <div class="modal-footer" style="background-color: #afd9ee">
-                            <button id="closeMsgButton" type="button" style="background-color: #a6e1ec"
+                        <div class="modal-footer">
+                            <button id="closeMsgButton" type="button" 
                                     class="btn btn-default" data-dismiss="modal">Close
                             </button>
                         </div>

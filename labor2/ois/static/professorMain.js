@@ -545,10 +545,6 @@ function professorNotifications(data) {
     var obj = JSON.parse(data);
     for (var i = 0; i < obj.length; i++) {
         var row = tableBody.insertRow(0);
-        if (!obj[i].isRead) {
-            row.bgColor = "LightGreen ";
-        } else
-            row.className = "info";
         var from = row.insertCell(0);
         var subject = row.insertCell(1);
         from.appendChild(createLinkNotification(obj[i].senderFirstName + ' ' + obj[i].senderLastName, obj[i].id, obj[i].isRead));
@@ -581,9 +577,10 @@ function createLinkHomeworkEdit(name, hw_id) {
 
 function createLinkNotification(name, not_id, isRead) {
     var a = document.createElement('a');
-    var linkText = document.createTextNode(name);
+    var linkText = document.createElement("span");
+    linkText.innerHTML = name;
     if (!isRead) {
-        var linkText = document.createTextNode(name + "(NEW)");
+        linkText.innerHTML = (name + " <span class='badge'>NEW</span>");
     }
     a.appendChild(linkText);
     a.title = not_id;
