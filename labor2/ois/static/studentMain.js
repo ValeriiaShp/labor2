@@ -1,55 +1,3 @@
-var submissionsJSON = {
-    "submissions": [
-        {
-            "subject": "IDU0013 Programming IV",
-            "task": "Code something cool",
-            "link": "goo.gl/123",
-            "grade": "5"
-        },
-        {
-            "subject": "IDU0013 Programming IV",
-            "task": "Code something very cool",
-            "link": "goo.gl/234"
-        },
-        {
-            "subject": "IDU0013 Programming IV",
-            "task": "Code something very super cool"
-        }
-    ]
-};
-
-var workgroupsJSON = {
-    "workgroups": [
-        {
-            "subject": "IDU0013 - Programmig IV",
-            "group": "Alpha",
-            "members": [
-                "Ann Krown",
-                "Mick Ael"
-            ],
-            "canBeAdded": true
-        },
-        {
-            "subject": "IDU0013 - Programmig IV",
-            "group": "Beta",
-            "members": [
-                "Kirill Bolshoj",
-                "Ivan Dron",
-                "Katya Sinyaja"
-            ],
-            "canBeAdded": false
-        },
-        {
-            "subject": "IDU0013 - Programmig IV",
-            "group": "Gamma",
-            "members": [
-                "Kadastr String"
-            ],
-            "canBeAdded": true
-        }
-    ]
-};
-
 var notificationsJSON = {
     "notifications": [
         {
@@ -76,40 +24,150 @@ var notificationsJSON = {
     ]
 };
 
-var gradesJSON = {
-    "grades": [
-    {
-        "code": "IDU0010",
-        "title": "Programming I",
-        "grade": "3"
-    },
-    {
-        "code": "IDU0011",
-        "title": "Programming II",
-        "grade": "4"
-    },
-    {
-        "code": "IDU0012",
-        "title": "Programming III",
-        "grade": "5"
-    }
-]
-};
-
 var unreadNotifications = 0;
 
+function viewHomeWork(hw_id) {
+
+}
+
+function groupsView() {
+        loadContent("studentStudentGroups");
+        $.ajax({
+                url: "/ois/mygroups",
+            })
+            .done(function (data) {
+                initMyGroups(data);
+            });
+
+        $.ajax({
+                url: "/ois/freegroups",
+            })
+            .done(function (data) {
+                initFreeGroups(data);
+            });
+
+}
+
+function joinGroup(group_id) {
+    $.ajax({
+        url: "/ois/joinGroup/" + group_id,
+    })
+    .done(function (data) {
+        groupsView();
+    });
+}
+
+function leaveGroup(group_id) {
+    $.ajax({
+        url: "/ois/leaveGroup/" + group_id,
+    })
+    .done(function (data) {
+        groupsView();
+    });
+}
+
+function studentSubjects(data) {
+    $('#stud_subm_subjects')
+        .find('option')
+        .remove()
+        .end()
+        .append('<option value="null" disabled>Select subject</option>')
+        .val('null')
+    ;
+
+    var selectDropDown = document.getElementById("stud_subm_subjects");
+
+    var obj = JSON.parse(data);
+    for (var i = 0; i < obj.length; i++) {
+        var opt = document.createElement('option');
+        opt.value = obj[i].subject_id;
+        opt.innerHTML = obj[i].subject_label;
+        selectDropDown.appendChild(opt);
+    }
+}
 
 $(document).ready(function () {
     $(function(){
         //$("#includedContent").load("studentHeader.html");
 
         initNotifications();
-        initGrades();
-        initSubmissions();
-        initGroups();
-
+        //initSubmissions();
+        
         loadContent('notifications');
     });
+
+    $("#studResults").click(function () {
+        $.ajax({
+
+                url: "/ois/studyresults",
+            })
+            .done(function (data) {
+                loadContent("studentStudyResults");
+                initGrades(data);
+            });
+
+    });
+
+
+    //studentWorkSubmission
+
+    $("#studSubmussions").click(function() {
+
+            $.ajax({
+
+                url: "/ois/mysubjects",
+            })
+            .done(function (data) {
+                loadContent("studentWorkSubmission");
+                studentSubjects(data);
+            });
+
+
+    });
+
+    $('#stud_subm_subjects').change(function () {
+        $.ajax({
+                url: "/ois/myhomeworks/" + this.options[this.selectedIndex].value
+            })
+            .done(function (data) {
+
+                fillHomeworks(data);
+                //loadContent("profHomework");
+                //professorSubjectsCreation(data);
+
+                //alert(data);
+            });
+
+    });
+
+    $("#studGroups").click(function () {
+        groupsView();
+
+    });
+
+
+    $("#newGroupBtn").click(function () {
+        $("#newGroup").modal("show");
+
+    });    
+
+    $('#formGroup').submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            type: "POST",
+            url: "/ois/newGroup/",
+            success: function(data) {
+                //document.getElementById("saved").style.display = 'block';
+                //clearForm();
+
+                $("#newGroup").modal("hide");
+                groupsView();
+
+            }
+        });
+        return false;
+    });
+
 });
 
 
@@ -180,65 +238,112 @@ function initNotifications() {
     populateUnreadNotificationsToNavbar();
 }
 
-function initGrades() {
+function initGrades(data) {
+
+    gradesJSON = JSON.parse(data)
+
     var table = document.getElementById("gradesTable");
     table.tBodies[0].remove();
     table.appendChild(document.createElement('tbody'));
     var tBody = table.getElementsByTagName('tbody')[0];
-    for (var i = 0; i < gradesJSON.grades.length; i++) {
+    for (var i = 0; i < gradesJSON.length; i++) {
+
+
+
+        // insert marks
+
+        for (var j = 0; j < gradesJSON[i].grades.length; j++) {
+            var row2 = tBody.insertRow(0);
+            var code2 = row2.insertCell(0);
+            var title2 = row2.insertCell(1);
+            var prof_name2 = row2.insertCell(2);
+            var mark2 = row2.insertCell(3);
+
+            code2.innerHTML = gradesJSON[i].grades[j].subject_code;
+            title2.innerHTML = gradesJSON[i].grades[j].subject_title;
+            prof_name2.innerHTML = gradesJSON[i].grades[j].subject_professor_name;
+            mark2.innerHTML = gradesJSON[i].grades[j].mark;
+        }
+
+                // insert sem
+
         var row = tBody.insertRow(0);
-        var code = row.insertCell(0);
-        var title = row.insertCell(1);
-        var mark = row.insertCell(2);
-        code.innerHTML = gradesJSON.grades[i].code;
-        title.innerHTML = gradesJSON.grades[i].title;
-        mark.innerHTML = gradesJSON.grades[i].grade;
+        var sem = row.insertCell(0);
+        sem.colSpan = 4;
+        sem.innerHTML = gradesJSON[i].semester;
     }
 
 }
 
-function initGroups(){
-    var groupsHtml = document.getElementById("workgroups");
+function fillHomeworks(data) {
+    homeworkJSON = JSON.parse(data);
 
-    for (var i = 0; i < workgroupsJSON.workgroups.length; i++) {
+    var table = document.getElementById("my_grades");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tBody = table.getElementsByTagName('tbody')[0];
 
-        var ppp = document.createElement('p');
-        var span1 = document.createElement('span');
-        span1.innerHTML = workgroupsJSON.workgroups[i].subject;
-        ppp.appendChild(span1);
-        var brr = document.createElement('br');
-        ppp.appendChild(brr);
-        var span2 = document.createElement('span');
-        span2.innerHTML = "<b>" + workgroupsJSON.workgroups[i].group + ": </b>";
-        ppp.appendChild(span2);
+    for (var i = 0; i < homeworkJSON.length; i++) {
 
-        var allMembers = "";
-        for (var j = 0; j < workgroupsJSON.workgroups[i].members.length; j++) {
-            allMembers += workgroupsJSON.workgroups[i].members[j] + ", ";
-        }
+        var row = tBody.insertRow(0);
+        var name = row.insertCell(0);
+        var grade = row.insertCell(1);
+        var view = row.insertCell(2);
 
-        if (allMembers != "") {
-            allMembers = allMembers.substr(0, allMembers.length - 2);
-        }
+        name.innerHTML = homeworkJSON[i].hw_name;
+        grade.innerHTML = homeworkJSON[i].grade;
 
-        var workgroupid = "workgroup" + i;
+        view.innerHTML = '<button class="btn btn-info" onclick="viewHomeWork(' + homeworkJSON[i].hw_id + ')">View</button>';
 
-        var span3 = document.createElement('span');
-        span3.id = workgroupid;
-        span3.innerHTML = allMembers;
-        ppp.appendChild(span3);
+    }
+}
 
-        if (workgroupsJSON.workgroups[i].canBeAdded) {
-            var span4 = document.createElement('span');
-            span4.innerHTML = ' <button class="btn btn-info" onclick="addToGroup(\'' + workgroupid + '\', this)">Add me</button>';
-            ppp.appendChild(span4);
-        }
+function initMyGroups(data){
+    workgroupsJSON = JSON.parse(data);
 
-        groupsHtml.appendChild(ppp);
+    var table = document.getElementById("my_groups");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tBody = table.getElementsByTagName('tbody')[0];
+
+    for (var i = 0; i < workgroupsJSON.length; i++) {
+
+        var row = tBody.insertRow(0);
+        var name = row.insertCell(0);
+        var members = row.insertCell(1);
+        var leave = row.insertCell(2);
+
+        name.innerHTML = workgroupsJSON[i].name;
+        members.innerHTML = workgroupsJSON[i].members;
+
+        leave.innerHTML = '<button class="btn btn-danger" onclick="leaveGroup(' + workgroupsJSON[i].group_id + ')">Leave</button>';
 
     }
 
 }
+
+function initFreeGroups(data){
+    workgroupsJSON = JSON.parse(data);
+
+    var table = document.getElementById("free_groups");
+    table.tBodies[0].remove();
+    table.appendChild(document.createElement('tbody'));
+    var tBody = table.getElementsByTagName('tbody')[0];
+
+    for (var i = 0; i < workgroupsJSON.length; i++) {
+
+        var row = tBody.insertRow(0);
+        var name = row.insertCell(0);
+        var members = row.insertCell(1);
+        var leave = row.insertCell(2);
+
+        name.innerHTML = workgroupsJSON[i].name;
+        members.innerHTML = workgroupsJSON[i].members;
+        leave.innerHTML = '<button class="btn btn-success" onclick="joinGroup(' + workgroupsJSON[i].group_id + ')">Join</button>'
+
+    }
+}
+
 
 function initSubmissions() {
 

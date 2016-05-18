@@ -13,7 +13,7 @@ class Semester(models.Model):
         return self.name
 
     def as_json(self):
-        return dict(name=self.name, startDate=self.start_date, endDate=self.end_date)
+        return dict(name=self.name, startDate=str(self.start_date), endDate=str(self.end_date))
 
 
 class SemesterUser(models.Model):
@@ -52,7 +52,7 @@ class HomeWork(models.Model):
     subject = models.ForeignKey(Subject)
 
     def __str__(self):
-        return self.name
+        return self.name + " in " + str(self.subject)
 
     def as_json(self):
         return dict(name=self.name, description=self.description, subject=self.subject.name,
@@ -110,6 +110,9 @@ class StudentGroup(models.Model):
     def as_json(self):
         return dict(name=self.name)
 
+    def __str__(self):
+        return self.name
+
 
 class StudentGroupUser(models.Model):
     student_group_id = models.ForeignKey(StudentGroup)
@@ -117,3 +120,6 @@ class StudentGroupUser(models.Model):
 
     def as_json(self):
         return dict(groupName=self.student_group_id.name, userLastName=self.user_id.last_name)
+
+    def __str__(self):
+        return str(self.user_id) + " in group " + str(self.student_group_id)

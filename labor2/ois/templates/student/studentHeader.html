@@ -22,9 +22,9 @@
             <ul class="nav navbar-nav">
                 <li><a onclick="loadContent('notifications')">Notifications <span class="badge" id="unreadNotifications">2</span></a>
                 </li>
-                <li><a onclick="loadContent('studentStudyResults')">Study results</a></li>
-                <li><a onclick="loadContent('studentWorkSubmission')">Work submissions</a></li>
-                <li><a onclick="loadContent('studentStudentGroups')">Groups of students</a></li>
+                <li id="studResults"><a>Study results</a></li>
+                <li id="studSubmussions"><a>Work submissions</a></li>
+                <li id="studGroups"><a>Student groups</a></li>
                 <li><a href="../logout/">Logout</a></li>
             </ul>
         </div>
@@ -69,6 +69,7 @@
                 <tr>
                     <th>Subject code</th>
                     <th>Subject title</th>
+                    <th>Professor</th>
                     <th>Grade</th>
                 </tr>
                 </thead>
@@ -81,14 +82,91 @@
     <div id="studentWorkSubmission" style="display: none">
         <div class="container" id="submissions">
 
+            <select name="stud_subm_subjects"         id="stud_subm_subjects">
+            </select>
+
+            <table class="table" id="my_grades">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Grade</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
         </div>
 
     </div>
 
 
     <div id="studentStudentGroups" style="display: none">
-        <div class="container" id="workgroups">
+        <div class="container" >
+
+            <h3>My Groups</h3>
+
+            <table class="table" id="my_groups">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Members</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <br>
+            <h3>Join a Group</h3>
+
+            <table class="table" id="free_groups">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Members</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+
+            <br>
+
+            <button class="btn btn-info" id="newGroupBtn">Create a new Group</button>
+
         </div>
+
+<div class="modal fade" id="newGroup">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">New group</h4>
+                    </div>
+                    <form id="formGroup" method="POST">{% csrf_token %}
+                        <div class="modal-body">
+                            <input type="hidden" name="hiddenInputHomeworkUserId" id="hiddenInputId"/>
+                            <input type="hidden" name="hiddenInputHomeworkId" id="hiddenInputHomeworkId"/>
+
+
+                            <label>Group name:</label><br/>
+                            <input name="groupName" id="groupName" type="text"/>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                            </button>
+                            <button type="submit" id="saveGradeButton" class="btn btn-primary">Create and join</button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
 </div>

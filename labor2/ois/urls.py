@@ -15,4 +15,13 @@ urlpatterns = [
     url(r'^subjects/(?P<semesterCode>[\w-]+)/$', views.subjects, name='subjects'),
     url(r'^editHomeworkUser/(?P<homeWorkUserId>[\w-]+)/$', views.editHomeworkUser, name='editHomeworkUser'),
     url(r'^createHomework/$', views.createHomework, name='createHomework'),
+    url(r'^studyresults/$', views.studyresults, name='studyresults'),
+    url(r'^mygroups/$', views.mygroups, name='mygroups'),
+    url(r'^freegroups/$', views.freegroups, name='freegroups'),
+    url(r'^joinGroup/(?P<groupId>[\w-]+)/$', views.joinGroup, name='joinGroup'),
+    url(r'^leaveGroup/(?P<groupId>[\w-]+)/$', views.leaveGroup, name='leaveGroup'),
+    url(r'^newGroup/$', views.newGroup, name='newGroup'),
+    url(r'^mysubjects/$', views.mysubjects, name='mysubjects'),
+    url(r'^myhomeworks/(?P<subjectCode>[\w-]+)/$', views.myhomeworks, name='myhomeworks'),
+    url(r'^myhomeworkstatus/(?P<homeworkCode>[\w-]+)/$', views.myhomeworkstatus, name='myhomeworkstatus'),
 ]
