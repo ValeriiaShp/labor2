@@ -119,6 +119,46 @@
                 </tbody>
             </table>
 
+            <div class="modal fade" id="hwView">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Homework submission</h4>
+                        </div>
+                        <form id="formGrade" method="POST">{% csrf_token %}
+                            <div class="modal-body">
+                                <input type="hidden" name="hiddenInputHomeworkUserId" id="hiddenInputId"/>
+                                <input type="hidden" name="hiddenInputHomeworkId" id="hiddenInputHomeworkId"/>
+
+                                <label>Homework name:</label><br/>
+                                <span id="homeworkName"></span>
+                                <br/><br/>
+
+                                <label>Homework description:</label><br/>
+                                <span id="homeworkDescription"></span>
+                                <br/><br/>
+
+                                <label>Grade:</label><br/>
+                                <span id="homeworkGrade"></span>
+                                <br/><br/>
+
+                                <label>Answer:</label><br/>
+                                <textarea name="homeworkStudentAnswer" id="homeworkStudentAnswer"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close
+                                </button>
+                                <button type="submit" id="saveGradeButton" class="btn btn-primary">Save 
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
         </div>
 
     </div>
@@ -164,7 +204,7 @@
 
         </div>
 
-<div class="modal fade" id="newGroup">
+        <div class="modal fade" id="newGroup">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">

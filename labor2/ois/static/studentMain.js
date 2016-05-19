@@ -1,5 +1,37 @@
 function viewHomeWork(hw_id) {
 
+    $.ajax({
+            url: "/ois/myhomeworkstatus/" + hw_id
+        })
+        .done(function (data) {
+            //loadContent("professorMarks");
+            //document.getElementById("hiddenInputId").textContent = hw_id;
+            fillEditData(data, hw_id);
+            $('#hwView').modal('show');
+        });
+  
+}
+
+function fillEditData(data, hwId) {
+    var obj = JSON.parse(data);
+    var homeworkName = obj.hw_name;
+    var homeworkDescription = obj.hw_desc;
+    var hwuId = obj.hwu_id;
+    var studentAnswer = obj.hwu_answer;
+    var grade = obj.hwu_grade;
+
+    if (grade == null) {
+        grade = "Not graded yet";
+    }
+
+    document.getElementById("hiddenInputId").value = hwuId;
+    document.getElementById("hiddenInputHomeworkId").value = obj.hwuId;
+    /*document.getElementById("receiverId").value = obj[0].userId;*/
+    document.getElementById("homeworkName").textContent = homeworkName;
+    document.getElementById("homeworkDescription").textContent = homeworkDescription;
+    document.getElementById("homeworkGrade").textContent = grade;
+    document.getElementById("homeworkStudentAnswer").value = studentAnswer;
+
 }
 
 function groupsView() {
@@ -122,10 +154,6 @@ $(document).ready(function () {
             .done(function (data) {
 
                 fillHomeworks(data);
-                //loadContent("profHomework");
-                //professorSubjectsCreation(data);
-
-                //alert(data);
             });
 
     });
@@ -147,8 +175,6 @@ $(document).ready(function () {
             type: "POST",
             url: "/ois/newGroup/",
             success: function(data) {
-                //document.getElementById("saved").style.display = 'block';
-                //clearForm();
 
                 $("#newGroup").modal("hide");
                 groupsView();
@@ -158,10 +184,30 @@ $(document).ready(function () {
         return false;
     });
 
+    $('#formGrade').submit(function() {
+        $.ajax({
+            data: $(this).serialize(),
+            type: "POST",
+            url: "/ois/submithomework/",
+            success: function(data) {
+
+                $("#hwView").modal("hide");
+                //groupsView();
+
+            }
+        });
+        return false;
+    });
+
+
+
 });
 
 
 function loadContent(content) {
+
+    //alert("content" + content);
+
     loadNotificationTable();
     if (content === 'logout') {
         window.location = "../login.html";

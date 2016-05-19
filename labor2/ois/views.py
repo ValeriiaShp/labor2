@@ -183,7 +183,9 @@ def studyresults(request):
     #s = semesters.reverse()
 
     subjectsForStudent = SubjectUser.objects.filter(id_user = student)
-    subjectsForStudentIds = set([c.id for c in subjectsForStudent])
+    subjectsForStudentIds = set([c.id_subject.id for c in subjectsForStudent])
+
+    print("stud subj: " + str(subjectsForStudentIds))
 
     results = []
 
@@ -197,13 +199,19 @@ def studyresults(request):
 
         subjectsInSemIds = set([c.id for c in subjectsInSem])
 
+        print("subj in sem: " + str(subjectsInSemIds))
+
         subjects = subjectsForStudentIds & subjectsInSemIds
 
         for subject in subjects:
 
             s = Subject.objects.get(pk = subject)
 
-            grades.append({'subject_code' : s.code, 'subject_title' : s.name, 'subject_professor_name' : (s.professor.first_name + " " + s.professor.last_name), 'mark' : '5'})
+            print("subject: " + str(s.name))
+
+            mark = calcMark(student, s)
+
+            grades.append({'subject_code' : s.code, 'subject_title' : s.name, 'subject_professor_name' : (s.professor.first_name + " " + s.professor.last_name), 'mark' : mark})
 
         resultForCurrentSemester['grades'] = grades
 
@@ -214,6 +222,53 @@ def studyresults(request):
 
 
     return HttpResponse(json.dumps(results))
+
+def calcMark(student, subject):
+    mark = ""
+
+    markSum = 0
+
+    homeworks = HomeWork.objects.filter(subject=subject)
+
+    num = 0
+
+    for homework in homeworks:
+
+        homeworkuser = HomeWorkUser.objects.filter(id_homework=homework, id_user=student)
+
+        if not homeworkuser:
+            if lastSemester() == subject.semester:
+                mark = "Not all homeworks submitted/graded"
+            else:
+                mark = "Absent"
+            return mark
+            
+        curMarkStr = homeworkuser[0].mark
+
+        print("subj: " + str(subject) + "; mark: " + str(curMarkStr))
+
+        if not curMarkStr:
+            if lastSemester() == subject.semester:
+                mark = "Not all homeworks submitted/graded"
+            else:
+                mark = "Absent"
+            return mark
+        else:
+            curMarkInt = curMarkStr
+
+        markSum += curMarkInt
+        num += 1
+
+
+        
+    if not num:
+        mark = "5"
+    else:
+        mark = str(round(markSum / num))
+
+
+
+    return mark
 
 
 def mygroups(request):
@@ -412,3 +467,25 @@ def myhomeworkstatus(request, homeworkCode):
 
 
     return HttpResponse(json.dumps(results))
+
+def submithomework(request):
+
+    answer = request.POST['homeworkStudentAnswer']    
+    hwuId = request.POST['hiddenInputHomeworkUserId']
+
+    homeworkuser = HomeWorkUser.objects.get(pk=hwuId)
+
+    homeworkuser.answer = answer
+
+    homeworkuser.save()
+
+    prof = homeworkuser.id_homework.subject.professor
+
+    student = request.user
+
+    messageText = student.first_name + " " + student.last_name + " just submitted homework: " + str(homeworkuser.id_homework.name)
+
+    notification = Notification(to_user=prof, from_user=student, topic="You have a new submission for evaluation",text=messageText)
+    notification.save()
+
+    return HttpResponse('Ok')

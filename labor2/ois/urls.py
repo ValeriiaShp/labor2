@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^mysubjects/$', views.mysubjects, name='mysubjects'),
     url(r'^myhomeworks/(?P<subjectCode>[\w-]+)/$', views.myhomeworks, name='myhomeworks'),
     url(r'^myhomeworkstatus/(?P<homeworkCode>[\w-]+)/$', views.myhomeworkstatus, name='myhomeworkstatus'),
+    url(r'^submithomework/$', views.submithomework, name='submithomework'),
     url(r'^search/$', views.search, name='search'),
     url(r'^detailedInfo/(?P<detailedUserId>[\w-]+)/$', views.detailedInfo, name='detailedInfo'),
     url(r'^notifications/$', views.notifications, name='notifications'),
